@@ -1,0 +1,1997 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Ficha U.A. • BNHA RPG</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    :root{
+      --bg1:#06101f; --bg2:#07152a;
+      --txt:#edf3ff; --muted:#b7c6ee;
+      --line:rgba(255,255,255,.12);
+      --shadow: 0 14px 34px rgba(0,0,0,.35);
+      --radius:18px;
+      --uaBlue:#2b6bff; --uaGreen:#20e3a2; --uaYellow:#ffd24a; --uaRed:#ff3d6d;
+      --sel: rgba(43,107,255,.22);
+      --selLine: rgba(43,107,255,.60);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; color:var(--txt);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      min-height:100vh;
+      background:
+        radial-gradient(1200px 700px at 15% 10%, rgba(43,107,255,.35), transparent 60%),
+        radial-gradient(900px 600px at 85% 20%, rgba(32,227,162,.25), transparent 60%),
+        radial-gradient(900px 600px at 60% 95%, rgba(255,210,74,.18), transparent 55%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      padding:22px; display:flex; justify-content:center;
+    }
+    .wrap{width:min(1220px, 100%); display:grid; gap:16px;}
+
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      padding:16px 18px;
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+      box-shadow: var(--shadow);
+      overflow:hidden; position:relative;
+    }
+    .topbar::after{
+      content:""; position:absolute; inset:-2px;
+      background: linear-gradient(90deg, rgba(43,107,255,.22), rgba(32,227,162,.18), rgba(255,210,74,.16));
+      filter: blur(18px); opacity:.75; z-index:0;
+    }
+    .topbar > *{position:relative; z-index:1}
+    .brand{display:flex; gap:12px; align-items:flex-start;}
+    .logo{
+      width:46px; height:46px; border-radius:14px;
+      background: linear-gradient(180deg, rgba(43,107,255,.55), rgba(43,107,255,.15));
+      border:1px solid rgba(43,107,255,.55);
+      display:grid; place-items:center;
+      font-weight:1200;
+      box-shadow: 0 10px 24px rgba(0,0,0,.25);
+    }
+    .brand h1{margin:0; font-size:16px; line-height:1.1}
+    .brand p{margin:6px 0 0; color:var(--muted); font-size:13px}
+
+    .chip{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(0,0,0,.25);
+      color:var(--muted);
+      font-size:12px;
+      user-select:none;
+      white-space:nowrap;
+    }
+
+    .grid{display:grid; grid-template-columns: 1.25fr .75fr; gap:16px;}
+    @media (max-width: 980px){ .grid{grid-template-columns:1fr} }
+
+    .panel{
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .head{
+      padding:14px 16px 10px;
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.12);
+    }
+    .head h2{margin:0; font-size:14px; letter-spacing:.2px}
+    .head .sub{color:var(--muted); font-size:12px}
+    .body{padding:14px 16px 16px}
+
+    .row{display:grid; grid-template-columns: repeat(12, 1fr); gap:10px; margin-top:10px;}
+    .field{
+      grid-column: span 4;
+      border:1px solid var(--line);
+      background: rgba(0,0,0,.16);
+      border-radius: 14px;
+      padding:10px;
+      display:flex; flex-direction:column; gap:6px;
+    }
+    .field.w6{grid-column: span 6}
+    .field.w12{grid-column: span 12}
+    @media (max-width: 980px){
+      .field,.field.w6,.field.w12{grid-column: span 12}
+    }
+    .field label{font-size:12px; color:var(--muted); display:flex; align-items:center; gap:8px}
+    .field input, .field textarea, .field select{
+      width:100%;
+      border:1px solid rgba(255,255,255,.10);
+      outline:none;
+      border-radius: 12px;
+      padding:10px 10px;
+      background: rgba(255,255,255,.06);
+      color:var(--txt);
+      font-size:14px;
+    }
+    .field textarea{min-height:92px; resize:vertical}
+
+    .resourceBar{display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-top:10px;}
+    @media (max-width: 520px){ .resourceBar{grid-template-columns:1fr 1fr} }
+    .resCard{
+      border:1px solid var(--line);
+      background: rgba(0,0,0,.16);
+      border-radius: 16px;
+      padding:12px;
+      display:grid;
+      gap:8px;
+    }
+    .resTop{display:flex; justify-content:space-between; align-items:center; gap:10px;}
+    .resTop .name{font-weight:1200}
+    .pill{
+      font-size:11px; color:var(--muted);
+      border:1px solid rgba(255,255,255,.10);
+      padding:6px 10px;
+      border-radius:999px;
+      background: rgba(255,255,255,.05);
+      white-space:nowrap;
+    }
+    .numRow{display:flex; gap:8px; align-items:center}
+    .readonly{opacity:.92; background: rgba(255,255,255,.04) !important}
+
+    /* seções reordenáveis */
+    #sections{display:grid; gap:12px;}
+    details.fold{
+      border:1px solid rgba(255,255,255,.12);
+      border-radius: 16px;
+      overflow:hidden;
+      background: rgba(0,0,0,.12);
+    }
+    details.fold > summary{
+      list-style:none;
+      cursor:pointer;
+      user-select:none;
+      padding:12px 12px;
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      background: rgba(0,0,0,.16);
+      font-weight:1200;
+    }
+    details.fold > summary::-webkit-details-marker{display:none}
+    details.fold .inside{padding:12px 12px 14px}
+
+    .sumLeft{display:flex; align-items:center; gap:10px;}
+    .sumRight{display:flex; align-items:center; gap:8px;}
+    .miniBtn{
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color:var(--txt);
+      font-weight:1200;
+      border-radius:10px;
+      padding:6px 10px;
+      cursor:pointer;
+      font-size:12px;
+    }
+    .miniBtn:hover{border-color: rgba(43,107,255,.55)}
+    .dragHint{color:var(--muted); font-weight:900; font-size:12px}
+
+    /* help tooltip */
+    .help{
+      position:relative;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:18px; height:18px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.06);
+      color:var(--muted);
+      font-size:12px;
+      font-weight:1200;
+      cursor:help;
+      flex: 0 0 auto;
+    }
+    .help[data-tip]:hover::after{
+      content: attr(data-tip);
+      position:absolute;
+      left: 0;
+      top: 120%;
+      min-width: 240px;
+      max-width: 380px;
+      z-index: 10;
+      padding:10px 10px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.82);
+      color: var(--txt);
+      font-size:12px;
+      line-height:1.35;
+      box-shadow: var(--shadow);
+      white-space: normal;
+    }
+
+    .table{
+      border:1px solid var(--line);
+      border-radius: 16px;
+      overflow:hidden;
+      background: rgba(0,0,0,.16);
+      margin-top:12px;
+    }
+    .tHead, .tRow{
+      display:grid;
+      grid-template-columns: 1.25fr .55fr .55fr .65fr .85fr;
+      gap:8px;
+      padding:10px 12px;
+      align-items:center;
+    }
+    .tHead{
+      background: rgba(0,0,0,.22);
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      font-size:12px; color:var(--muted); font-weight:1000;
+    }
+    .tRow{border-bottom: 1px solid rgba(255,255,255,.06);}
+    .tRow:last-child{border-bottom:none}
+    .tRow .name{font-weight:1100}
+    .tRow input{
+      width:100%;
+      border:1px solid rgba(255,255,255,.10);
+      outline:none;
+      border-radius: 12px;
+      padding:10px 10px;
+      background: rgba(255,255,255,.06);
+      color:var(--txt);
+      font-size:14px;
+    }
+
+    /* clicável e selecionável */
+    .pickRow{cursor:pointer;}
+    .pickRow:hover{background: rgba(255,255,255,.03);}
+    .pickRow.selected{
+      background: var(--sel);
+      outline: 2px solid var(--selLine);
+      outline-offset: -2px;
+    }
+    .badgeSel{
+      display:inline-flex; align-items:center; justify-content:center;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.20);
+      font-size:12px;
+      color: var(--txt);
+      font-weight:1100;
+    }
+
+    .btnRow{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px}
+    .btn{
+      border:1px solid var(--line);
+      background: rgba(0,0,0,.18);
+      color:var(--txt);
+      padding:12px 12px;
+      border-radius: 14px;
+      cursor:pointer;
+      font-weight:1200;
+      transition: transform .08s ease, border-color .2s ease;
+      white-space:nowrap;
+    }
+    .btn:hover{transform: translateY(-1px); border-color: rgba(43,107,255,.55)}
+    .btn.green{
+      background: linear-gradient(180deg, rgba(32,227,162,.28), rgba(32,227,162,.10));
+      border-color: rgba(32,227,162,.55);
+    }
+    .btn.red{
+      background: linear-gradient(180deg, rgba(255,61,109,.28), rgba(255,61,109,.10));
+      border-color: rgba(255,61,109,.55);
+    }
+    .btn.yellow{
+      background: linear-gradient(180deg, rgba(255,210,74,.26), rgba(255,210,74,.10));
+      border-color: rgba(255,210,74,.55);
+    }
+
+    /* portrait */
+    .portraitBox{
+      width:100%;
+      aspect-ratio: 4/5;
+      border-radius: 16px;
+      border:1px dashed rgba(255,255,255,.18);
+      background: rgba(255,255,255,.04);
+      overflow:hidden;
+      display:grid;
+      place-items:center;
+      position:relative;
+    }
+    .portraitBox img{width:100%; height:100%; object-fit:cover; display:none;}
+    .portraitBox .ph{color:var(--muted); font-size:12px; text-align:center; padding:10px;}
+
+    /* dados misturados */
+    .diceQuick{display:grid; grid-template-columns: repeat(7, 1fr); gap:8px;}
+    @media (max-width: 980px){ .diceQuick{grid-template-columns: repeat(4, 1fr);} }
+
+    /* resultado */
+    .bigResult{
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(0,0,0,.20);
+      padding:14px;
+      display:grid;
+      gap:10px;
+      margin-top:12px;
+    }
+    .bigValue{
+      display:flex; flex-wrap:wrap; align-items:baseline; gap:12px;
+      font-size:34px; font-weight:1300; letter-spacing:.4px;
+    }
+    .bigValue small{font-size:13px; color:var(--muted); font-weight:1000}
+    .tags{display:flex; gap:8px; flex-wrap:wrap; color:var(--muted); font-size:13px}
+    .tag{
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.06);
+      padding:6px 10px;
+      border-radius:999px;
+    }
+
+    .history{
+      display:flex; flex-direction:column; gap:10px;
+      max-height: 700px; overflow:auto; padding-right:4px;
+      margin-top:10px;
+    }
+    .entry{
+      border:1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(0,0,0,.16);
+      padding:12px;
+      display:grid; gap:6px;
+    }
+    .entry .top{display:flex; align-items:center; justify-content:space-between; gap:10px}
+    .entry .expr{font-size:12px; color:var(--muted); overflow:hidden; white-space:nowrap; text-overflow:ellipsis; max-width:72%}
+    .entry .sum{font-size:16px; font-weight:1200}
+    .entry .detail{font-size:12px; color:var(--muted); line-height:1.35; word-break:break-word}
+
+    /* fold box pra descrição grande (habilidades) */
+    details.textFold{
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:14px;
+      overflow:hidden;
+      background: rgba(0,0,0,.12);
+    }
+    details.textFold > summary{
+      list-style:none;
+      cursor:pointer;
+      padding:10px 10px;
+      background: rgba(0,0,0,.16);
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      font-weight:1100;
+      user-select:none;
+    }
+    details.textFold > summary::-webkit-details-marker{display:none}
+    details.textFold .inside{padding:10px}
+    details.textFold textarea{min-height:150px}
+
+    /* inventário com foto */
+    .invGrid{
+      display:grid;
+      grid-template-columns: 92px 1fr;
+      gap:10px;
+      align-items:start;
+    }
+    .invPhoto{
+      width:92px; height:92px;
+      border-radius:14px;
+      border:1px dashed rgba(255,255,255,.18);
+      background: rgba(255,255,255,.04);
+      overflow:hidden;
+      display:grid;
+      place-items:center;
+      position:relative;
+    }
+    .invPhoto img{width:100%; height:100%; object-fit:cover; display:none;}
+    .invPhoto .ph{font-size:11px; color:var(--muted); text-align:center; padding:6px;}
+    .invBtns{display:flex; gap:8px; flex-wrap:wrap; margin-top:8px}
+    .tiny{
+      padding:8px 10px;
+      border-radius:12px;
+      font-weight:1200;
+      font-size:12px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color:var(--txt);
+      cursor:pointer;
+    }
+    .tiny:hover{border-color: rgba(43,107,255,.55)}
+
+    .toast{
+      position:fixed;
+      bottom:18px; left:50%;
+      transform:translateX(-50%);
+      padding:10px 12px;
+      background: rgba(0,0,0,.55);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:999px;
+      color:var(--txt);
+      font-size:13px;
+      box-shadow: var(--shadow);
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .2s ease, transform .2s ease;
+      z-index:999;
+    }
+    .toast.show{opacity:1; transform:translateX(-50%) translateY(-2px)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">U.A</div>
+        <div>
+          <h1>Ficha de Personagem • Boku no Hero RPG</h1>
+          <p>Clique no <b>Status</b> e na <b>Perícia</b> para selecionar. Depois aperte <b>Rolar Teste</b>.</p>
+        </div>
+      </div>
+      <div style="display:flex; gap:10px; align-items:center;"><div class="chip" id="roomStatusChip">🏠 Sala: —</div><div class="chip" id="clock">⏱️ —</div></div>
+    </header>
+
+
+    <!-- LOBBY (aparece antes de entrar na sala) -->
+    <section class="panel" id="lobbyPanel" style="display:block;">
+      <div class="head">
+        <div>
+          <h2>🎮 Salas (Mestre / Player)</h2>
+          <div class="sub">Crie uma sala para virar <b>Mestre</b> ou entre como <b>Player</b>. Depois a ficha aparece.</div>
+        </div>
+        <div class="chip" id="netStatus">🔌 Offline</div>
+      </div>
+      <div class="body">
+        <div class="row" style="margin-top:0;">
+          <div class="field w6">
+            <label>Seu nome <span class="help" data-tip="Seu nome na sala (aparece nas rolagens).">?</span></label>
+            <input id="net_name" placeholder="Ex: AzzyRpg"/>
+          </div>
+          <div class="field w6">
+            <label>ID da sala <span class="help" data-tip="Um código simples, tipo: ua-1a">?</span></label>
+            <input id="net_room" placeholder="Ex: ua-1a"/>
+          </div>
+          <div class="field w6">
+            <label>Criar sala (vira Mestre) <span class="help" data-tip="Só pode existir 1 Mestre por sala.">?</span></label>
+            <button class="btn green" id="btnCreateRoom">Criar como Mestre</button>
+          </div>
+          <div class="field w6">
+            <label>Entrar como Player <span class="help" data-tip="Entre na sala que já tem Mestre.">?</span></label>
+            <button class="btn yellow" id="btnJoinRoom">Entrar como Player</button>
+          </div>
+        </div>
+        <div style="color:var(--muted); font-size:12px; line-height:1.35; margin-top:10px;">
+          ✔️ Ao entrar, sua ficha salva automaticamente e sincroniza com a sala (tempo real).<br/>
+          👑 Mestre: vê todas as fichas e pode editar HP/PD e qualquer campo.
+        </div>
+      </div>
+    </section>
+
+    <main class="grid" id="appRoot" style="display:none;">
+      <!-- ESQUERDA -->
+      <section class="panel">
+        <div class="head">
+          <div>
+            <h2>📘 Ficha</h2>
+            <div class="sub">Auto-save ligado (não perde ao fechar)</div>
+          </div>
+          <div class="chip">💾 auto-save</div>
+        </div>
+
+        <div class="body">
+          <!-- SEÇÕES REORDENÁVEIS -->
+          <div id="sections">
+
+            <!-- Identidade -->
+            <details class="fold" data-sec="identidade" open>
+              <summary>
+                <div class="sumLeft">
+                  <span>🧾 Identidade</span>
+                  <span class="help" data-tip="Aqui é só informação do personagem. Tudo salva automaticamente.">?</span>
+                </div>
+                <div class="sumRight">
+                  <span class="dragHint">reordenar</span>
+                  <button class="miniBtn secUp" type="button" title="Subir">↑</button>
+                  <button class="miniBtn secDown" type="button" title="Descer">↓</button>
+                  <span style="color:var(--muted); font-weight:900;">abrir ▾</span>
+                </div>
+              </summary>
+              <div class="inside">
+                <div class="row" style="margin-top:0">
+                  <div class="field w6">
+                    <label>Nome <span class="help" data-tip="Nome do personagem.">?</span></label>
+                    <input id="name" placeholder="Nome do personagem"/>
+                  </div>
+                  <div class="field w6">
+                    <label>Jogador <span class="help" data-tip="Seu nome.">?</span></label>
+                    <input id="player" placeholder="Seu nome"/>
+                  </div>
+                  <div class="field w6">
+                    <label>Turma <span class="help" data-tip="Ex: 1-A, 2-B...">?</span></label>
+                    <input id="classroom" placeholder="Ex: 1-A"/>
+                  </div>
+                  <div class="field w6">
+                    <label>Quirk (nome) <span class="help" data-tip="Nome da individualidade.">?</span></label>
+                    <input id="quirk_name" placeholder="Nome do Quirk"/>
+                  </div>
+                </div>
+
+                <div class="resourceBar">
+                  <div class="resCard">
+                    <div class="resTop"><div class="name">❤ HP</div><div class="pill">CON×20</div></div>
+                    <div class="numRow">
+                      <input id="hp_now" type="number" value="20" min="0"/>
+                      <span class="pill">/</span>
+                      <input id="hp_max" type="number" class="readonly" readonly/>
+                    </div>
+                  </div>
+                  <div class="resCard">
+                    <div class="resTop"><div class="name">⚡ PD</div><div class="pill">QUIRK×10 + INT/2</div></div>
+                    <div class="numRow">
+                      <input id="pd_now" type="number" value="11" min="0"/>
+                      <span class="pill">/</span>
+                      <input id="pd_max" type="number" class="readonly" readonly/>
+                    </div>
+                  </div>
+                  <div class="resCard">
+                    <div class="resTop"><div class="name">📈 Nível</div><div class="pill">manual</div></div>
+                    <input id="level" type="number" value="0" min="0"/>
+                  </div>
+                  <div class="resCard">
+                    <div class="resTop"><div class="name">⭐ XP</div><div class="pill">texto</div></div>
+                    <input id="xp" value="XP 0/100"/>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <!-- Status -->
+            <details class="fold" data-sec="status" open>
+              <summary>
+                <div class="sumLeft">
+                  <span>📌 Status</span>
+                  <span class="help" data-tip="Clique em um Status pra selecionar (ex: Força). Ele define quantos d20 você rola no teste.">?</span>
+                </div>
+                <div class="sumRight">
+                  <span class="badgeSel" id="selStatusBadge">Status: (nenhum)</span>
+                  <button class="miniBtn secUp" type="button" title="Subir">↑</button>
+                  <button class="miniBtn secDown" type="button" title="Descer">↓</button>
+                  <span style="color:var(--muted); font-weight:900;">abrir ▾</span>
+                </div>
+              </summary>
+              <div class="inside">
+                <div style="color:var(--muted); font-size:12px; line-height:1.35;">
+                  Dica: <b>Força 3</b> → você rola <b>3d20</b> e pega o maior.
+                </div>
+
+                <div class="table" id="statusTable">
+                  <div class="tHead">
+                    <div>Status</div><div>Valor</div><div>Bônus</div><div>Total</div><div>Seleção</div>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <!-- Perícias + Rolagens abaixo -->
+            <details class="fold" data-sec="pericias_rolagens" open>
+              <summary>
+                <div class="sumLeft">
+                  <span>🎯 Perícias + Rolagens</span>
+                  <span class="help" data-tip="Clique numa perícia pra selecionar (ex: Luta). Ela soma no final do teste.">?</span>
+                </div>
+                <div class="sumRight">
+                  <span class="badgeSel" id="selSkillBadge">Perícia: (nenhuma)</span>
+                  <button class="miniBtn secUp" type="button" title="Subir">↑</button>
+                  <button class="miniBtn secDown" type="button" title="Descer">↓</button>
+                  <span style="color:var(--muted); font-weight:900;">abrir ▾</span>
+                </div>
+              </summary>
+              <div class="inside">
+                <div style="color:var(--muted); font-size:12px; line-height:1.35;">
+                  Exemplo: <b>Força + Luta</b> = maior do pool + Luta.
+                </div>
+
+                <div class="table" id="skillsTable">
+                  <div class="tHead">
+                    <div>Perícias</div><div>Valor</div><div>Bônus</div><div>Total</div><div>Seleção</div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="field w6">
+                    <label>Pontos usados <span class="help" data-tip="Soma dos valores (coluna Valor) das perícias.">?</span></label>
+                    <input id="skill_points_used" class="readonly" readonly/>
+                  </div>
+                  <div class="field w6">
+                    <label>Opinião Pública <span class="help" data-tip="Valor narrativo: fama/reputação.">?</span></label>
+                    <input id="public_opinion" type="number" value="0"/>
+                  </div>
+                </div>
+
+                <!-- ROLAGEM DO TESTE -->
+                <div class="table" style="margin-top:14px; padding:12px; border-radius:16px;">
+                  <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+                    <div style="font-weight:1200">🧪 Rolar Teste (clicando no Status e na Perícia)</div>
+                    <div class="pill">Ordem Paranormal</div>
+                  </div>
+
+                  <div class="row">
+                    <div class="field w6">
+                      <label>Selecionado agora <span class="help" data-tip="Clique no Status e na Perícia na tabela acima. Depois role.">?</span></label>
+                      <input id="selectedPreview" class="readonly" readonly value="Status: (nenhum) | Perícia: (nenhuma)"/>
+                    </div>
+                    <div class="field w6">
+                      <label>Bônus/Penalidade (dados) <span class="help" data-tip="Bônus adiciona d20 no pool. Penalidade remove (mínimo 1).">?</span></label>
+                      <select id="test_bonus">
+                        <option value="0" selected>Normal (0)</option>
+                        <option value="1">Bônus +1d20</option>
+                        <option value="2">Bônus +2d20</option>
+                        <option value="-1">Penalidade -1d20</option>
+                        <option value="-2">Penalidade -2d20</option>
+                      </select>
+                    </div>
+                    <div class="field w6">
+                      <label>Mod extra <span class="help" data-tip="Soma no final (ex: +2 por item/condição).">?</span></label>
+                      <input id="test_extra" type="number" value="0"/>
+                    </div>
+                    <div class="field w6">
+                      <label>Limpar seleção <span class="help" data-tip="Remove seleção de status/perícia rapidamente.">?</span></label>
+                      <button class="btn red" id="clearSelection">Limpar</button>
+                    </div>
+                  </div>
+
+                  <div class="btnRow">
+                    <button class="btn green" id="roll_test">Rolar Teste</button>
+                  </div>
+
+                  <div style="margin-top:10px; color:var(--muted); font-size:12px; line-height:1.35;">
+                    Regra: rola <b>(Status)d20</b> pega o maior, soma <b>Perícia</b> (se tiver), soma <b>Mod</b>.
+                  </div>
+
+                  <hr style="border:none; border-top:1px solid rgba(255,255,255,.10); margin:14px 0"/>
+
+                  <!-- DADOS MISTURADOS -->
+                  <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+                    <div style="font-weight:1200">💥 Dados misturados (dano/efeito)</div>
+                    <div class="pill">direito + / esquerdo -</div>
+                  </div>
+
+                  <div class="row" style="margin-top:10px">
+                    <div class="field w12">
+                      <label>Pool atual <span class="help" data-tip="Clique direito no dado para adicionar. Clique esquerdo para remover.">?</span></label>
+                      <input id="mixed_pool_text" class="readonly" readonly value="(vazio)"/>
+                    </div>
+                  </div>
+
+                  <div class="diceQuick" id="mixedDice" style="margin-top:10px">
+                    <button class="btn" data-sides="4">d4</button>
+                    <button class="btn" data-sides="6">d6</button>
+                    <button class="btn" data-sides="8">d8</button>
+                    <button class="btn" data-sides="10">d10</button>
+                    <button class="btn" data-sides="12">d12</button>
+                    <button class="btn yellow" data-sides="20">d20</button>
+                    <button class="btn" data-sides="100">d100</button>
+                  </div>
+
+                  <div class="row" style="margin-top:10px">
+                    <div class="field w6">
+                      <label>Modificador <span class="help" data-tip="Soma no final do dano/efeito.">?</span></label>
+                      <input id="mixed_mod" type="number" value="0"/>
+                    </div>
+                    <div class="field w6">
+                      <label>Zerar dados <span class="help" data-tip="Limpa o pool de dados misturados.">?</span></label>
+                      <button class="btn red" id="mixed_clear">Zerar pool</button>
+                    </div>
+                  </div>
+
+                  <div class="btnRow">
+                    <button class="btn yellow" id="roll_mixed">Rolar Pool</button>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <!-- Habilidades (voltou!) -->
+            <details class="fold" data-sec="habilidades" open>
+              <summary>
+                <div class="sumLeft">
+                  <span>📦 Habilidades</span>
+                  <span class="help" data-tip="Adicione habilidades, custo, dano e descrição grande. Clique para abrir a descrição.">?</span>
+                </div>
+                <div class="sumRight">
+                  <button class="miniBtn secUp" type="button" title="Subir">↑</button>
+                  <button class="miniBtn secDown" type="button" title="Descer">↓</button>
+                  <span style="color:var(--muted); font-weight:900;">abrir ▾</span>
+                </div>
+              </summary>
+              <div class="inside">
+                <div style="color:var(--muted); font-size:12px; line-height:1.35;">
+                  Dica: use o botão da setinha na descrição pra caber mais texto.
+                </div>
+
+                <div class="table" style="margin-top:10px">
+                  <div class="tHead" style="grid-template-columns: 1.05fr .55fr .45fr .55fr 1.8fr;">
+                    <div>Nome</div><div>Dano</div><div>PE/PV</div><div>Range</div><div>Descrição (abre)</div>
+                  </div>
+                  <div id="movesBody"></div>
+                </div>
+
+                <div class="btnRow">
+                  <button class="btn green" id="addMove">+ Adicionar habilidade</button>
+                  <button class="btn red" id="clearMoves">Limpar habilidades</button>
+                </div>
+              </div>
+            </details>
+
+            <!-- Inventário (voltou, com foto por item!) -->
+            <details class="fold" data-sec="inventario" open>
+              <summary>
+                <div class="sumLeft">
+                  <span>🎒 Inventário</span>
+                  <span class="help" data-tip="Cada item pode ter foto, quantidade e descrição. Tudo fica salvo.">?</span>
+                </div>
+                <div class="sumRight">
+                  <button class="miniBtn secUp" type="button" title="Subir">↑</button>
+                  <button class="miniBtn secDown" type="button" title="Descer">↓</button>
+                  <span style="color:var(--muted); font-weight:900;">abrir ▾</span>
+                </div>
+              </summary>
+              <div class="inside">
+                <div class="table" style="padding:12px; border-radius:16px;">
+                  <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+                    <div style="font-weight:1200">Itens</div>
+                    <div class="pill">foto por item</div>
+                  </div>
+
+                  <div id="invList" style="display:grid; gap:12px; margin-top:12px;"></div>
+
+                  <div class="btnRow">
+                    <button class="btn green" id="addItem">+ Adicionar item</button>
+                    <button class="btn red" id="clearItems">Limpar inventário</button>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <!-- História (melhorada) -->
+            <details class="fold" data-sec="historia" open>
+              <summary>
+                <div class="sumLeft">
+                  <span>📖 História do Personagem</span>
+                  <span class="help" data-tip="Aqui é pra escrever a história completa, personalidade e objetivos. Use as caixinhas para organizar.">?</span>
+                </div>
+                <div class="sumRight">
+                  <button class="miniBtn secUp" type="button" title="Subir">↑</button>
+                  <button class="miniBtn secDown" type="button" title="Descer">↓</button>
+                  <span style="color:var(--muted); font-weight:900;">abrir ▾</span>
+                </div>
+              </summary>
+              <div class="inside">
+                <div class="row" style="margin-top:0">
+                  <div class="field w12">
+                    <label>Resumo rápido <span class="help" data-tip="Uma frase ou parágrafo curto: quem ele é e o que quer.">?</span></label>
+                    <textarea id="story_summary" placeholder="Ex: Um aluno da U.A. que quer virar herói número 1..."></textarea>
+                  </div>
+
+                  <div class="field w12">
+                    <label>História completa <span class="help" data-tip="Aqui cabe textão mesmo.">?</span></label>
+                    <textarea id="story_full" style="min-height:220px" placeholder="Escreva a história completa aqui..."></textarea>
+                  </div>
+
+                  <div class="field w6">
+                    <label>Personalidade <span class="help" data-tip="Como ele age? Confiante? Teimoso? Gentil?">?</span></label>
+                    <textarea id="story_personality" placeholder="..."></textarea>
+                  </div>
+                  <div class="field w6">
+                    <label>Objetivos / Motivação <span class="help" data-tip="O que ele quer alcançar? Por quê?">?</span></label>
+                    <textarea id="story_goals" placeholder="..."></textarea>
+                  </div>
+
+                  <div class="field w6">
+                    <label>Medos / Fraquezas <span class="help" data-tip="Coisas que pegam ele (limites, traumas, medos).">?</span></label>
+                    <textarea id="story_flaws" placeholder="..."></textarea>
+                  </div>
+                  <div class="field w6">
+                    <label>Relações importantes <span class="help" data-tip="Amigos, família, rival, mentor etc.">?</span></label>
+                    <textarea id="story_relations" placeholder="..."></textarea>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+          </div><!-- /sections -->
+
+          <div class="btnRow" style="margin-top:14px">
+            <button class="btn" id="saveNow">Salvar agora</button>
+            <button class="btn red" id="resetAll">Resetar tudo</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- DIREITA: aparência + resultado + histórico -->
+      <aside class="panel">
+        <div class="head">
+          <div>
+            <h2>🖼️ Aparência + Resultados</h2>
+            <div class="sub">Quando rolar, a página desce pro resultado automaticamente</div>
+          </div>
+          <div class="chip">📜</div>
+        </div>
+
+        <div class="body">
+
+          <details class="fold" id="masterPanel" open style="display:none;">
+            <summary>
+              <div class="sumLeft">
+                <span>👑 Painel do Mestre</span>
+                <span class="help" data-tip="Clique numa ficha para abrir e editar. Depois use 'Salvar na sala' para atualizar o Player/NPC.">?</span>
+              </div>
+              <div class="sumRight"><span class="pill" id="roomChip">Sala: —</span></div>
+            </summary>
+            <div class="inside">
+              <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:0;">
+                <button class="btn" id="masterBackMine" style="padding:10px 12px;">↩ Minha ficha</button>
+                <button class="btn green" id="masterSaveTarget" style="padding:10px 12px;">💾 Salvar na sala</button>
+                <button class="btn yellow" id="npcCreate" style="padding:10px 12px;">+ Criar NPC/Inimigo</button>
+                <button class="btn red" id="npcDelete" style="padding:10px 12px; display:none;">Excluir NPC</button>
+              </div>
+
+              <div class="table" style="padding:12px; border-radius:16px; margin-top:12px;">
+                <div style="font-weight:1200; margin-bottom:8px;">📂 Abas de fichas (tempo real)</div>
+                <div id="sheetTabs" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+                <div style="color:var(--muted); font-size:12px; line-height:1.35; margin-top:10px;">
+                  Dica: HP/PD ficam bem visíveis na seção <b>Identidade</b>. Você pode editar e salvar.
+                </div>
+              </div>
+
+              <div class="table" style="padding:12px; border-radius:16px; margin-top:12px;">
+                <div style="font-weight:1200; margin-bottom:8px;">📡 Rolagens da sala</div>
+                <div id="roomRollFeed" style="display:grid; gap:10px;"></div>
+              </div>
+            </div>
+          </details>
+
+          <details class="fold" open>
+            <summary>
+              <div class="sumLeft">
+                <span>🖼️ Aparência do personagem</span>
+                <span class="help" data-tip="A imagem fica salva no seu navegador.">?</span>
+              </div>
+              <div class="sumRight"><span style="color:var(--muted); font-weight:900;">abrir ▾</span></div>
+            </summary>
+            <div class="inside">
+              <div class="portraitBox">
+                <img id="portraitImg" alt="Aparência do personagem"/>
+                <div class="ph" id="portraitPh">Envie uma imagem do personagem</div>
+              </div>
+
+              <div class="btnRow" style="margin-top:10px">
+                <input id="portraitFile" type="file" accept="image/*" style="display:none"/>
+                <button class="btn yellow" id="portraitUpload">Enviar imagem</button>
+                <button class="btn red" id="portraitRemove">Remover</button>
+              </div>
+            </div>
+          </details>
+
+          <details class="fold" open>
+            <summary>
+              <div class="sumLeft">
+                <span>✅ Resultado</span>
+                <span class="help" data-tip="Aqui aparece o resultado do último teste/rolagem.">?</span>
+              </div>
+              <div class="sumRight"><span style="color:var(--muted); font-weight:900;">abrir ▾</span></div>
+            </summary>
+            <div class="inside">
+              <div class="bigResult" id="resultBox">
+                <div class="bigValue">
+                  <span id="finalValue">—</span>
+                  <small id="exprText">Sem rolagem ainda</small>
+                </div>
+                <div class="tags">
+                  <span class="tag" id="rollsText">Rolagens: —</span>
+                  <span class="tag" id="baseText">Base: —</span>
+                  <span class="tag" id="modText">Mod: —</span>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <details class="fold" open>
+            <summary>
+              <div class="sumLeft">
+                <span>📜 Histórico</span>
+                <span class="help" data-tip="Guarda as últimas rolagens. Fica salvo no navegador.">?</span>
+              </div>
+              <div class="sumRight"><span style="color:var(--muted); font-weight:900;">abrir ▾</span></div>
+            </summary>
+            <div class="inside">
+              <div class="btnRow" style="margin-top:0">
+                <button class="btn" id="copy">Copiar último</button>
+                <button class="btn red" id="clear_hist">Limpar histórico</button>
+              </div>
+              <div class="history" id="history"></div>
+            </div>
+          </details>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <div class="toast" id="toast">Feito!</div>
+
+  <script>
+    // ===== Clock =====
+    const clock = document.getElementById("clock");
+    const pad = (x) => String(x).padStart(2,"0");
+    function updateClock(){
+      const d = new Date();
+      clock.textContent = `⏱️ ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    }
+    setInterval(updateClock, 1000); updateClock();
+
+    // ===== Data =====
+    const STATUS = [
+      {key:"for", name:"Força"},
+      {key:"des", name:"Destreza"},
+      {key:"con", name:"Constituição"},
+      {key:"int", name:"Inteligência"},
+      {key:"det", name:"Determinação"},
+      {key:"quirk", name:"Quirk"},
+    ];
+    const SKILLS = [
+      "Acrobacia","Adestramento","Artes","Atletismo","Atualidades","Ciências","Crime",
+      "Diplomacia","Enganação","Furtividade","Intimidação","Investigação","Intuição",
+      "Luta","Medicina","Pilotagem","Pontaria","Sobrevivência","Tecnologia"
+    ];
+
+    // ===== Helpers =====
+    const el = (id) => document.getElementById(id);
+    const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+    const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+    const toast = el("toast");
+    function showToast(msg="Feito!"){
+      toast.textContent = msg;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 1100);
+    }
+    function formatSigned(n){
+      n = Number(n) || 0;
+      if (n === 0) return "+0";
+      return (n > 0 ? "+" : "") + n;
+    }
+
+    // ===== Selection state =====
+    let selectedStatusKey = null;
+    let selectedSkillName = null;
+
+    const selStatusBadge = el("selStatusBadge");
+    const selSkillBadge  = el("selSkillBadge");
+    const selectedPreview = el("selectedPreview");
+
+    function statusNameFromKey(k){
+      return STATUS.find(s=>s.key===k)?.name || "(nenhum)";
+    }
+    function updateSelectionUI(){
+      selStatusBadge.textContent = `Status: ${selectedStatusKey ? statusNameFromKey(selectedStatusKey) : "(nenhum)"}`;
+      selSkillBadge.textContent  = `Perícia: ${selectedSkillName ? selectedSkillName : "(nenhuma)"}`;
+      selectedPreview.value = `Status: ${selectedStatusKey ? statusNameFromKey(selectedStatusKey) : "(nenhum)"} | Perícia: ${selectedSkillName ? selectedSkillName : "(nenhuma)"}`;
+      autoSaveDebounced();
+    }
+
+    function clearSelection(){
+      selectedStatusKey = null;
+      selectedSkillName = null;
+      document.querySelectorAll("[data-pick='status']").forEach(r=>r.classList.remove("selected"));
+      document.querySelectorAll("[data-pick='skill']").forEach(r=>r.classList.remove("selected"));
+      updateSelectionUI();
+      showToast("Seleção limpa!");
+    }
+    el("clearSelection").addEventListener("click", clearSelection);
+
+    // ===== Result/History =====
+    const finalValue = el("finalValue");
+    const exprText   = el("exprText");
+    const rollsText  = el("rollsText");
+    const baseText   = el("baseText");
+    const modText    = el("modText");
+    const historyEl  = el("history");
+    const resultBox  = el("resultBox");
+    let lastCopy = "";
+
+    function addHistory(item){
+      const div = document.createElement("div");
+      div.className = "entry";
+      div.innerHTML = `
+        <div class="top">
+          <div class="expr" title="${item.expr}">${item.expr}</div>
+          <div class="sum">${item.total}</div>
+        </div>
+        <div class="detail">${item.detail}</div>
+      `;
+      historyEl.prepend(div);
+    }
+
+    function renderResult(expr, total, detail, rollsInfo, base, mod){
+      finalValue.textContent = total;
+      exprText.textContent = expr;
+      rollsText.textContent = `Rolagens: ${rollsInfo || "—"}`;
+      baseText.textContent = `Base: ${base ?? "—"}`;
+      modText.textContent = `Mod: ${mod ?? "—"}`;
+      lastCopy = `${expr} => ${total} | ${detail}`;
+      addHistory({expr, total, detail});
+      resultBox.scrollIntoView({behavior:"smooth", block:"start"});
+      autoSaveDebounced();
+    }
+
+    // ===== Ordem test =====
+    function rollPoolKeepHighest(n){
+      n = clamp(n, 1, 50);
+      const rolls = Array.from({length:n}, () => randInt(1, 20));
+      const best = Math.max(...rolls);
+      return {rolls, best};
+    }
+
+    // ===== Sheet formulas =====
+    function getStatusTotal(key){
+      const v = Number(el(`st_${key}_v`).value) || 0;
+      const b = Number(el(`st_${key}_b`).value) || 0;
+      return v + b;
+    }
+    function getSkillTotal(name){
+      const vEl = el(`sk_${name}_v`);
+      const bEl = el(`sk_${name}_b`);
+      if (!vEl || !bEl) return 0;
+      return (Number(vEl.value)||0) + (Number(bEl.value)||0);
+    }
+    function getSkillValue(name){
+      const vEl = el(`sk_${name}_v`);
+      return vEl ? (Number(vEl.value)||0) : 0;
+    }
+
+    function recalcAll(){
+      STATUS.forEach(s => el(`st_${s.key}_t`).value = getStatusTotal(s.key));
+      SKILLS.forEach(s=>{
+        const t = el(`sk_${s}_t`);
+        if (t) t.value = getSkillTotal(s);
+      });
+
+      const conT = getStatusTotal("con");
+      el("hp_max").value = Math.max(0, Math.floor(conT * 20));
+
+      const quirkT = getStatusTotal("quirk");
+      const intT = getStatusTotal("int");
+      el("pd_max").value = Math.max(0, Math.floor((quirkT * 10) + (intT / 2)));
+
+      el("hp_now").value = clamp(Number(el("hp_now").value)||0, 0, Number(el("hp_max").value)||999999);
+      el("pd_now").value = clamp(Number(el("pd_now").value)||0, 0, Number(el("pd_max").value)||999999);
+
+      const used = SKILLS.reduce((acc, s) => acc + getSkillValue(s), 0);
+      el("skill_points_used").value = used;
+    }
+
+    // ===== Tables (clicáveis) =====
+    function buildStatusRow(container, st){
+      const row = document.createElement("div");
+      row.className = "tRow pickRow";
+      row.dataset.pick = "status";
+      row.dataset.key = st.key;
+
+      row.innerHTML = `
+        <div class="name">${st.name}</div>
+        <div><input id="st_${st.key}_v" type="number" value="1"></div>
+        <div><input id="st_${st.key}_b" type="number" value="0"></div>
+        <div><input id="st_${st.key}_t" class="readonly" type="number" readonly></div>
+        <div><span class="pill">Clique</span></div>
+      `;
+
+      row.addEventListener("click", (e) => {
+        if (e.target && (e.target.tagName === "INPUT")) return;
+        const already = (selectedStatusKey === st.key);
+        document.querySelectorAll("[data-pick='status']").forEach(r=>r.classList.remove("selected"));
+        if (already){
+          selectedStatusKey = null;
+          row.classList.remove("selected");
+        } else {
+          selectedStatusKey = st.key;
+          row.classList.add("selected");
+        }
+        updateSelectionUI();
+      });
+
+      container.appendChild(row);
+    }
+
+    function buildSkillRow(container, skName){
+      const row = document.createElement("div");
+      row.className = "tRow pickRow";
+      row.dataset.pick = "skill";
+      row.dataset.name = skName;
+
+      row.innerHTML = `
+        <div class="name">${skName}</div>
+        <div><input id="sk_${skName}_v" type="number" value="0"></div>
+        <div><input id="sk_${skName}_b" type="number" value="0"></div>
+        <div><input id="sk_${skName}_t" class="readonly" type="number" readonly></div>
+        <div><span class="pill">Clique</span></div>
+      `;
+
+      row.addEventListener("click", (e) => {
+        if (e.target && (e.target.tagName === "INPUT")) return;
+        const already = (selectedSkillName === skName);
+        document.querySelectorAll("[data-pick='skill']").forEach(r=>r.classList.remove("selected"));
+        if (already){
+          selectedSkillName = null;
+          row.classList.remove("selected");
+        } else {
+          selectedSkillName = skName;
+          row.classList.add("selected");
+        }
+        updateSelectionUI();
+      });
+
+      container.appendChild(row);
+    }
+
+    function initTables(){
+      const stTable = el("statusTable");
+      const skTable = el("skillsTable");
+      STATUS.forEach(s => buildStatusRow(stTable, s));
+      SKILLS.forEach(s => buildSkillRow(skTable, s));
+      recalcAll();
+    }
+
+    // ===== Rolar teste =====
+    el("roll_test").addEventListener("click", () => {
+      recalcAll();
+
+      if (!selectedStatusKey){
+        showToast("Clique em um Status primeiro (ex: Força)!");
+        return;
+      }
+
+      const stName = statusNameFromKey(selectedStatusKey);
+      const bonus = Number(el("test_bonus").value)||0;
+      const extra = Number(el("test_extra").value)||0;
+
+      const baseN = Math.max(1, getStatusTotal(selectedStatusKey));
+      const n = Math.max(1, baseN + bonus);
+
+      const r = rollPoolKeepHighest(n);
+      const best = r.best;
+
+      let skTotal = 0;
+      let label = `Teste: ${stName}`;
+      if (selectedSkillName){
+        skTotal = getSkillTotal(selectedSkillName);
+        label = `Teste: ${stName} + ${selectedSkillName}`;
+      }
+
+      const base = best + skTotal;
+      const total = base + extra;
+
+      renderResult(
+        `${label} • ${n}d20 (maior) ${selectedSkillName ? `+ ${skTotal}` : ""} ${formatSigned(extra)}`,
+        total,
+        `Pool: [${r.rolls.join(", ")}] → maior ${best}${selectedSkillName ? ` | +Perícia ${skTotal}` : ""} | Extra ${formatSigned(extra)}`,
+        `[${r.rolls.join(", ")}] (maior ${best})`,
+        base,
+        formatSigned(extra)
+      );
+    });
+
+    // ===== Mixed dice pool =====
+    const mixed = new Map();
+    function poolToString(){
+      const parts = Array.from(mixed.entries())
+        .filter(([,c]) => c > 0)
+        .sort((a,b)=>Number(b[0])-Number(a[0]))
+        .map(([s,c]) => `${c}d${s}`);
+      return parts.length ? parts.join(" + ") : "(vazio)";
+    }
+    function refreshPoolText(){ el("mixed_pool_text").value = poolToString(); autoSaveDebounced(); }
+    function addDie(sides){ mixed.set(sides, (mixed.get(sides)||0)+1); refreshPoolText(); }
+    function removeDie(sides){
+      const cur = mixed.get(sides)||0;
+      if (cur<=0) return;
+      if (cur===1) mixed.delete(sides);
+      else mixed.set(sides, cur-1);
+      refreshPoolText();
+    }
+
+    el("mixedDice").addEventListener("click", (e) => {
+      const b = e.target.closest("button[data-sides]");
+      if (!b) return;
+      removeDie(Number(b.dataset.sides));
+    });
+    el("mixedDice").addEventListener("contextmenu", (e) => {
+      const b = e.target.closest("button[data-sides]");
+      if (!b) return;
+      e.preventDefault();
+      addDie(Number(b.dataset.sides));
+    });
+
+    el("mixed_clear").addEventListener("click", () => {
+      mixed.clear();
+      refreshPoolText();
+      showToast("Pool zerado!");
+    });
+
+    el("roll_mixed").addEventListener("click", () => {
+      const mod = Number(el("mixed_mod").value)||0;
+      const entries = Array.from(mixed.entries()).filter(([,c]) => c > 0);
+      if (!entries.length){ showToast("Pool vazio!"); return; }
+
+      let all = [];
+      let sum = 0;
+      for (const [sides, count] of entries){
+        for (let i=0;i<count;i++){
+          const rr = randInt(1, Number(sides));
+          all.push(`d${sides}:${rr}`);
+          sum += rr;
+        }
+      }
+      const total = sum + mod;
+
+      renderResult(
+        `Pool: ${poolToString()} ${formatSigned(mod)}`,
+        total,
+        `Rolagens: ${all.join(", ")} | Soma ${sum} | Mod ${formatSigned(mod)}`,
+        all.join(", "),
+        sum,
+        formatSigned(mod)
+      );
+    });
+
+    // ===== Habilidades (com descrição abre/fecha) =====
+    const movesBody = el("movesBody");
+
+    function makeMoveRow(data={}){
+      const row = document.createElement("div");
+      row.className = "tRow";
+      row.style.gridTemplateColumns = "1.05fr .55fr .45fr .55fr 1.8fr";
+
+      const mkIn = (ph="")=>{
+        const i = document.createElement("input");
+        i.placeholder = ph;
+        return i;
+      };
+
+      const name = mkIn("Nome da habilidade");
+      const dmg  = mkIn("Ex: 2d6");
+      const cost = mkIn("Ex: 2 PE");
+      const rng  = mkIn("Ex: 6 casas");
+
+      name.value = data.name || "";
+      dmg.value  = data.dmg || "";
+      cost.value = data.cost || "";
+      rng.value  = data.rng || "";
+
+      const fold = document.createElement("details");
+      fold.className = "textFold";
+      const sum = document.createElement("summary");
+      sum.innerHTML = `<span>Descrição</span><span class="pill">abrir ▾</span>`;
+      const inside = document.createElement("div");
+      inside.className = "inside";
+      const ta = document.createElement("textarea");
+      ta.placeholder = "Escreva a descrição completa aqui...";
+      ta.value = data.desc || "";
+      inside.appendChild(ta);
+      fold.appendChild(sum);
+      fold.appendChild(inside);
+
+      row.append(name, dmg, cost, rng, fold);
+      return row;
+    }
+
+    function addMove(data){ movesBody.appendChild(makeMoveRow(data)); autoSaveDebounced(); }
+    el("addMove").addEventListener("click", () => addMove({}));
+    el("clearMoves").addEventListener("click", () => {
+      movesBody.innerHTML = "";
+      showToast("Habilidades limpas!");
+      autoSaveDebounced();
+    });
+
+    // ===== Inventário (com foto por item) =====
+    const invList = el("invList");
+
+    function setInvPhoto(box, imgEl, phEl, dataUrl){
+      if (!dataUrl){
+        imgEl.style.display = "none";
+        phEl.style.display = "block";
+        imgEl.src = "";
+        box.dataset.photo = "";
+        return;
+      }
+      imgEl.src = dataUrl;
+      imgEl.style.display = "block";
+      phEl.style.display = "none";
+      box.dataset.photo = dataUrl;
+    }
+
+    function makeInvItem(data={}){
+      const wrap = document.createElement("div");
+      wrap.className = "table";
+      wrap.style.padding = "12px";
+      wrap.style.borderRadius = "16px";
+
+      const top = document.createElement("div");
+      top.style.display = "flex";
+      top.style.justifyContent = "space-between";
+      top.style.alignItems = "center";
+      top.style.gap = "10px";
+      top.innerHTML = `<div style="font-weight:1200">Item</div><div class="pill">clique e edite</div>`;
+
+      const grid = document.createElement("div");
+      grid.className = "invGrid";
+      grid.style.marginTop = "10px";
+
+      const photo = document.createElement("div");
+      photo.className = "invPhoto";
+
+      const img = document.createElement("img");
+      const ph  = document.createElement("div");
+      ph.className = "ph";
+      ph.textContent = "sem foto";
+      photo.append(img, ph);
+
+      const right = document.createElement("div");
+
+      const name = document.createElement("input");
+      name.placeholder = "Nome do item (ex: Granada, Cinto, Kit médico)";
+      name.value = data.name || "";
+
+      const qty = document.createElement("input");
+      qty.type = "number";
+      qty.min = "0";
+      qty.placeholder = "Qtd";
+      qty.value = data.qty ?? 1;
+
+      const descFold = document.createElement("details");
+      descFold.className = "textFold";
+      const sum = document.createElement("summary");
+      sum.innerHTML = `<span>Descrição / Efeito</span><span class="pill">abrir ▾</span>`;
+      const inside = document.createElement("div");
+      inside.className = "inside";
+      const ta = document.createElement("textarea");
+      ta.placeholder = "Detalhes do item, bônus, efeito, limitações...";
+      ta.value = data.desc || "";
+      inside.appendChild(ta);
+      descFold.append(sum, inside);
+
+      const two = document.createElement("div");
+      two.className = "row";
+      two.style.marginTop = "10px";
+      const f1 = document.createElement("div");
+      f1.className = "field w12";
+      f1.style.margin = "0";
+      const lab1 = document.createElement("label");
+      lab1.textContent = "Nome do item";
+      f1.append(lab1, name);
+
+      const f2 = document.createElement("div");
+      f2.className = "field w6";
+      f2.style.margin = "0";
+      const lab2 = document.createElement("label");
+      lab2.textContent = "Quantidade";
+      f2.append(lab2, qty);
+
+      const f3 = document.createElement("div");
+      f3.className = "field w6";
+      f3.style.margin = "0";
+      const lab3 = document.createElement("label");
+      lab3.textContent = "Ações";
+      const btns = document.createElement("div");
+      btns.className = "invBtns";
+
+      const file = document.createElement("input");
+      file.type = "file";
+      file.accept = "image/*";
+      file.style.display = "none";
+
+      const up = document.createElement("button");
+      up.className = "tiny";
+      up.type = "button";
+      up.textContent = "Enviar foto";
+
+      const rm = document.createElement("button");
+      rm.className = "tiny";
+      rm.type = "button";
+      rm.textContent = "Remover foto";
+
+      const del = document.createElement("button");
+      del.className = "tiny";
+      del.type = "button";
+      del.textContent = "Excluir item";
+
+      btns.append(up, rm, del);
+      f3.append(lab3, btns);
+
+      const f4 = document.createElement("div");
+      f4.className = "field w12";
+      f4.style.margin = "0";
+      const lab4 = document.createElement("label");
+      lab4.textContent = "Descrição / Efeito";
+      f4.append(lab4, descFold);
+
+      two.append(f1, f2, f3, f4);
+      right.append(two);
+
+      grid.append(photo, right);
+      wrap.append(top, grid);
+
+      // events foto
+      up.addEventListener("click", () => file.click());
+      file.addEventListener("change", () => {
+        const f = file.files?.[0];
+        if (!f) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          setInvPhoto(photo, img, ph, String(reader.result));
+          showToast("Foto do item salva!");
+          autoSaveDebounced();
+        };
+        reader.readAsDataURL(f);
+      });
+      rm.addEventListener("click", () => {
+        setInvPhoto(photo, img, ph, "");
+        autoSaveDebounced();
+      });
+      del.addEventListener("click", () => {
+        wrap.remove();
+        showToast("Item removido!");
+        autoSaveDebounced();
+      });
+
+      // set initial photo
+      setInvPhoto(photo, img, ph, data.photo || "");
+
+      // auto-save on input
+      wrap.addEventListener("input", () => autoSaveDebounced());
+
+      // store file input inside wrap so it persists
+      wrap.appendChild(file);
+
+      return wrap;
+    }
+
+    function addItem(data){ invList.appendChild(makeInvItem(data)); autoSaveDebounced(); }
+    el("addItem").addEventListener("click", () => addItem({}));
+    el("clearItems").addEventListener("click", () => {
+      invList.innerHTML = "";
+      showToast("Inventário limpo!");
+      autoSaveDebounced();
+    });
+
+    // ===== Portrait upload =====
+    const portraitImg = el("portraitImg");
+    const portraitPh = el("portraitPh");
+    const portraitFile = el("portraitFile");
+
+    function setPortrait(dataUrl){
+      if (!dataUrl){
+        portraitImg.style.display = "none";
+        portraitPh.style.display = "block";
+        portraitImg.src = "";
+        return;
+      }
+      portraitImg.src = dataUrl;
+      portraitImg.style.display = "block";
+      portraitPh.style.display = "none";
+    }
+
+    el("portraitUpload").addEventListener("click", () => portraitFile.click());
+    portraitFile.addEventListener("change", () => {
+      const f = portraitFile.files?.[0];
+      if (!f) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        setPortrait(String(reader.result));
+        showToast("Imagem salva!");
+        autoSaveDebounced();
+      };
+      reader.readAsDataURL(f);
+    });
+    el("portraitRemove").addEventListener("click", () => {
+      setPortrait(null);
+      showToast("Imagem removida!");
+      autoSaveDebounced();
+    });
+
+    // ===== Copy / clear history =====
+    el("copy").addEventListener("click", async () => {
+      const txt = lastCopy || `${exprText.textContent} => ${finalValue.textContent}`;
+      try{
+        await navigator.clipboard.writeText(txt);
+        showToast("Copiado!");
+      }catch{
+        showToast("Sem permissão pra copiar :(");
+      }
+    });
+    el("clear_hist").addEventListener("click", () => {
+      historyEl.innerHTML = "";
+      showToast("Histórico limpo!");
+      autoSaveDebounced();
+    });
+
+    // ===== Reordenar abas =====
+    const sections = el("sections");
+    const ORDER_KEY = "bnha_sections_order_v2";
+
+    function getSectionIds(){
+      return Array.from(sections.querySelectorAll("details.fold"))
+        .map(d => d.getAttribute("data-sec"))
+        .filter(Boolean);
+    }
+    function saveSectionOrder(){
+      localStorage.setItem(ORDER_KEY, JSON.stringify(getSectionIds()));
+      autoSaveDebounced();
+    }
+    function restoreSectionOrder(){
+      try{
+        const raw = localStorage.getItem(ORDER_KEY);
+        if (!raw) return;
+        const ids = JSON.parse(raw);
+        const map = new Map();
+        Array.from(sections.querySelectorAll("details.fold")).forEach(d => map.set(d.getAttribute("data-sec"), d));
+        ids.forEach(id => { const node = map.get(id); if (node) sections.appendChild(node); });
+      }catch{}
+    }
+
+    sections.addEventListener("click", (e) => {
+      const up = e.target.closest(".secUp");
+      const down = e.target.closest(".secDown");
+      if (!up && !down) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      const details = e.target.closest("details.fold");
+      if (!details) return;
+
+      if (up){
+        const prev = details.previousElementSibling;
+        if (prev) sections.insertBefore(details, prev);
+        saveSectionOrder();
+        return;
+      }
+      if (down){
+        const next = details.nextElementSibling;
+        if (next) sections.insertBefore(next, details);
+        saveSectionOrder();
+        return;
+      }
+    });
+
+    // ===== Auto-save =====
+    const LS_KEY = "bnha_sheet_full_v1";
+
+    function collectMoves(){
+      const rows = Array.from(movesBody.querySelectorAll(".tRow"));
+      return rows.map(r=>{
+        const inputs = r.querySelectorAll("input");
+        const ta = r.querySelector("textarea");
+        return {
+          name: inputs[0]?.value || "",
+          dmg:  inputs[1]?.value || "",
+          cost: inputs[2]?.value || "",
+          rng:  inputs[3]?.value || "",
+          desc: ta?.value || ""
+        };
+      });
+    }
+
+    function collectItems(){
+      const items = [];
+      Array.from(invList.children).forEach(wrap=>{
+        const inputs = wrap.querySelectorAll("input");
+        // inputs order inside item: name, qty (and the hidden file input at the end)
+        const name = inputs[0]?.value || "";
+        const qty  = Number(inputs[1]?.value || 0);
+        const desc = wrap.querySelector("textarea")?.value || "";
+        const photoBox = wrap.querySelector(".invPhoto");
+        const photo = photoBox?.dataset.photo || "";
+        items.push({name, qty, desc, photo});
+      });
+      return items;
+    }
+
+    function collect(){
+      const obj = {
+        name: el("name").value,
+        player: el("player").value,
+        classroom: el("classroom").value,
+        quirk_name: el("quirk_name").value,
+        hp_now: el("hp_now").value,
+        pd_now: el("pd_now").value,
+        level: el("level").value,
+        xp: el("xp").value,
+        public_opinion: el("public_opinion").value,
+
+        story_summary: el("story_summary").value,
+        story_full: el("story_full").value,
+        story_personality: el("story_personality").value,
+        story_goals: el("story_goals").value,
+        story_flaws: el("story_flaws").value,
+        story_relations: el("story_relations").value,
+
+        selectedStatusKey,
+        selectedSkillName,
+        test_bonus: el("test_bonus").value,
+        test_extra: el("test_extra").value,
+
+        mixed_mod: el("mixed_mod").value,
+        mixed_pool: Array.from(mixed.entries()),
+
+        portrait: (portraitImg.src && portraitImg.style.display !== "none") ? portraitImg.src : "",
+        historyHTML: historyEl.innerHTML,
+
+        status: {},
+        skills: {},
+
+        moves: collectMoves(),
+        items: collectItems()
+      };
+
+      STATUS.forEach(s=>{
+        obj.status[s.key] = { v: el(`st_${s.key}_v`).value, b: el(`st_${s.key}_b`).value };
+      });
+      SKILLS.forEach(s=>{
+        obj.skills[s] = { v: el(`sk_${s}_v`).value, b: el(`sk_${s}_b`).value };
+      });
+
+      return obj;
+    }
+
+    function apply(obj){
+      if (!obj) return;
+
+      el("name").value = obj.name ?? "";
+      el("player").value = obj.player ?? "";
+      el("classroom").value = obj.classroom ?? "";
+      el("quirk_name").value = obj.quirk_name ?? "";
+      el("hp_now").value = obj.hp_now ?? 20;
+      el("pd_now").value = obj.pd_now ?? 11;
+      el("level").value = obj.level ?? 0;
+      el("xp").value = obj.xp ?? "XP 0/100";
+      el("public_opinion").value = obj.public_opinion ?? 0;
+
+      el("story_summary").value = obj.story_summary ?? "";
+      el("story_full").value = obj.story_full ?? "";
+      el("story_personality").value = obj.story_personality ?? "";
+      el("story_goals").value = obj.story_goals ?? "";
+      el("story_flaws").value = obj.story_flaws ?? "";
+      el("story_relations").value = obj.story_relations ?? "";
+
+      el("test_bonus").value = obj.test_bonus ?? "0";
+      el("test_extra").value = obj.test_extra ?? "0";
+
+      if (obj.status){
+        STATUS.forEach(s=>{
+          if (obj.status[s.key]){
+            el(`st_${s.key}_v`).value = obj.status[s.key].v ?? 1;
+            el(`st_${s.key}_b`).value = obj.status[s.key].b ?? 0;
+          }
+        });
+      }
+      if (obj.skills){
+        SKILLS.forEach(s=>{
+          if (obj.skills[s]){
+            el(`sk_${s}_v`).value = obj.skills[s].v ?? 0;
+            el(`sk_${s}_b`).value = obj.skills[s].b ?? 0;
+          }
+        });
+      }
+
+      // selection
+      selectedStatusKey = obj.selectedStatusKey ?? null;
+      selectedSkillName = obj.selectedSkillName ?? null;
+
+      if (selectedStatusKey){
+        const row = document.querySelector(`[data-pick="status"][data-key="${selectedStatusKey}"]`);
+        if (row) row.classList.add("selected");
+      }
+      if (selectedSkillName){
+        const row = document.querySelector(`[data-pick="skill"][data-name="${CSS.escape(selectedSkillName)}"]`);
+        if (row) row.classList.add("selected");
+      }
+
+      // mixed
+      mixed.clear();
+      (obj.mixed_pool || []).forEach(([s,c]) => { if (c>0) mixed.set(Number(s), Number(c)); });
+      el("mixed_mod").value = obj.mixed_mod ?? "0";
+      refreshPoolText();
+
+      // portrait + history
+      setPortrait(obj.portrait || "");
+      if (obj.historyHTML) historyEl.innerHTML = obj.historyHTML;
+
+      // moves
+      movesBody.innerHTML = "";
+      (obj.moves || []).forEach(m => movesBody.appendChild(makeMoveRow(m)));
+      if (!(obj.moves||[]).length) { for (let i=0;i<4;i++) addMove({}); }
+
+      // items
+      invList.innerHTML = "";
+      (obj.items || []).forEach(it => invList.appendChild(makeInvItem(it)));
+      if (!(obj.items||[]).length) { addItem({name:"", qty:1, desc:"", photo:""}); }
+
+      recalcAll();
+      updateSelectionUI();
+    }
+
+    function autoSave(){
+      try{ localStorage.setItem(LS_KEY, JSON.stringify(collect())); }catch{}
+    }
+    let saveTimer = null;
+    function autoSaveDebounced(){
+      if (saveTimer) clearTimeout(saveTimer);
+      saveTimer = setTimeout(autoSave, 300);
+    }
+
+    el("saveNow").addEventListener("click", () => { autoSave(); showToast("Salvo!"); });
+    el("resetAll").addEventListener("click", () => {
+      localStorage.removeItem(LS_KEY);
+      localStorage.removeItem(ORDER_KEY);
+      location.reload();
+    });
+
+    document.addEventListener("input", (e) => {
+      const id = e.target?.id || "";
+      if (id.startsWith("st_") || id.startsWith("sk_") || ["hp_now","pd_now"].includes(id)) recalcAll();
+      autoSaveDebounced();
+    });
+
+    
+    // =======================
+    // Multiplayer (Sala)
+    // =======================
+    const socket = io();
+    const netStatus = el("netStatus");
+    const roomStatusChip = el("roomStatusChip");
+    const roomChip = document.getElementById("roomChip");
+    const lobbyPanel = document.getElementById("lobbyPanel");
+    const appRoot = document.getElementById("appRoot");
+    const masterPanel = document.getElementById("masterPanel");
+    const sheetTabs = document.getElementById("sheetTabs");
+    const roomRollFeed = document.getElementById("roomRollFeed");
+    const masterSaveTarget = document.getElementById("masterSaveTarget");
+    const masterBackMine = document.getElementById("masterBackMine");
+    const npcCreate = document.getElementById("npcCreate");
+    const npcDelete = document.getElementById("npcDelete");
+
+    let NET = { roomId:"", role:"", mySocketId:"", masterSocketId:"", targetId:"", targetType:"player", lastMySheet:null };
+    const SHEETS = new Map(); // id -> sheet
+    const INDEX = []; // last index list
+
+    function setNetChip(txt){
+      if (netStatus) netStatus.textContent = txt;
+    }
+    socket.on("connect", ()=>setNetChip("🟢 Online"));
+    socket.on("disconnect", ()=>setNetChip("🔴 Offline"));
+
+    // Lobby buttons
+    el("btnCreateRoom").addEventListener("click", ()=>{
+      const name = (el("net_name").value.trim() || "Mestre");
+      const roomId = el("net_room").value.trim();
+      socket.emit("room:create", { roomId, name });
+    });
+    el("btnJoinRoom").addEventListener("click", ()=>{
+      const name = (el("net_name").value.trim() || "Player");
+      const roomId = el("net_room").value.trim();
+      socket.emit("room:join", { roomId, name });
+    });
+
+    socket.on("error:msg", (msg)=>showToast(msg));
+
+    socket.on("room:joined", ({ roomId, role, socketId })=>{
+      NET.roomId = roomId; NET.role = role; NET.mySocketId = socketId;
+      NET.targetId = ""; NET.targetType = "player";
+      lobbyPanel.style.display = "none";
+      appRoot.style.display = "grid";
+      roomStatusChip.textContent = `🏠 Sala: ${roomId} • ${role.toUpperCase()}`;
+      if (roomChip) roomChip.textContent = `Sala: ${roomId}`;
+      if (role === "master"){
+        masterPanel.style.display = "block";
+      } else {
+        masterPanel.style.display = "none";
+      }
+      // envia ficha atual pro servidor (tempo real)
+      autoSendSheetDebounced();
+      showToast(`Entrou na sala: ${roomId} (${role})`);
+    });
+
+    // ===== Index de fichas (players + NPCs) para o mestre
+    function tabLabel(entry){
+      const nm = entry.name || (entry.type==="npc" ? "NPC" : "Player");
+      const hp = (entry.hp ?? "—");
+      const pd = (entry.pd ?? "—");
+      const emoji = entry.type==="npc" ? "👾" : "👤";
+      return `${emoji} ${nm} • HP ${hp} • PD ${pd}`;
+    }
+
+    function renderTabs(list){
+      if (!sheetTabs) return;
+      sheetTabs.innerHTML = "";
+      list.forEach(entry=>{
+        const b = document.createElement("button");
+        b.className = "btn";
+        b.style.padding = "10px 12px";
+        b.textContent = tabLabel(entry);
+        if (NET.targetId === entry.id) b.style.borderColor = "rgba(255,210,74,.65)";
+        b.addEventListener("click", ()=>{
+          NET.targetId = entry.id;
+          NET.targetType = entry.type;
+          const sheet = SHEETS.get(entry.id);
+          if (sheet){
+            apply(sheet);
+            showToast(`Abrindo: ${entry.name || entry.id}`);
+          } else {
+            if (entry.type==="player") socket.emit("master:requestSheet", { roomId: NET.roomId, ownerSocketId: entry.id });
+            if (entry.type==="npc") socket.emit("npc:request", { roomId: NET.roomId, npcId: entry.id });
+          }
+          npcDelete.style.display = (entry.type==="npc") ? "inline-flex" : "none";
+          renderTabs(list);
+        });
+        sheetTabs.appendChild(b);
+      });
+    }
+
+    socket.on("room:sheetsIndex", ({ list })=>{
+      if (NET.role !== "master") return;
+      // update cache of entries, and rerender
+      renderTabs(list || []);
+      window.__lastIndex = list || [];
+    });
+
+    socket.on("sheet:load", ({ ownerSocketId, sheet, type, id })=>{
+      // compat: server sends ownerSocketId for players; for npc we'll use id
+      const key = id || ownerSocketId;
+      if (!key) return;
+      SHEETS.set(key, sheet);
+      if (NET.role==="master"){
+        // se não tem target, abre automaticamente o primeiro que chegar
+        if (!NET.targetId) { NET.targetId = key; NET.targetType = type || "player"; apply(sheet); }
+      } else {
+        // player sempre aplica a própria ficha
+        apply(sheet);
+      }
+    });
+
+    // resumos (HP/PD) em tempo real
+    socket.on("sheet:summary", (summary)=>{
+      if (NET.role!=="master") return;
+      // pede index atualizado (simples e robusto)
+      socket.emit("room:requestIndex", { roomId: NET.roomId });
+    });
+
+    // Mestre: salvar no alvo (player ou npc)
+    masterSaveTarget.addEventListener("click", ()=>{
+      if (NET.role!=="master") return;
+      if (!NET.targetId) return showToast("Clique numa ficha nas abas primeiro.");
+      const sheet = collect();
+      SHEETS.set(NET.targetId, sheet);
+      if (NET.targetType==="npc"){
+        socket.emit("npc:update", { roomId: NET.roomId, npcId: NET.targetId, sheet });
+        showToast("NPC salvo!");
+      } else {
+        socket.emit("master:updateSheet", { roomId: NET.roomId, ownerSocketId: NET.targetId, sheet });
+        showToast("Ficha do player salva!");
+      }
+    });
+
+    masterBackMine.addEventListener("click", ()=>{
+      if (NET.role!=="master") return;
+      NET.targetId = "";
+      NET.targetType = "player";
+      npcDelete.style.display = "none";
+      if (NET.lastMySheet) apply(NET.lastMySheet);
+      showToast("Voltando pra sua ficha.");
+      socket.emit("room:requestIndex", { roomId: NET.roomId });
+    });
+
+    // Criar NPC
+    npcCreate.addEventListener("click", ()=>{
+      if (NET.role!=="master") return;
+      const base = collect();
+      // default name
+      base.name = base.name ? `NPC: ${base.name}` : "NPC/Inimigo";
+      socket.emit("npc:create", { roomId: NET.roomId, sheet: base });
+    });
+
+    npcDelete.addEventListener("click", ()=>{
+      if (NET.role!=="master") return;
+      if (NET.targetType!=="npc" || !NET.targetId) return;
+      socket.emit("npc:delete", { roomId: NET.roomId, npcId: NET.targetId });
+      NET.targetId=""; NET.targetType="player";
+      npcDelete.style.display="none";
+      showToast("NPC excluído.");
+    });
+
+    socket.on("npc:created", ({ npcId, sheet })=>{
+      if (NET.role!=="master") return;
+      SHEETS.set(npcId, sheet);
+      NET.targetId = npcId;
+      NET.targetType = "npc";
+      apply(sheet);
+      npcDelete.style.display="inline-flex";
+      socket.emit("room:requestIndex", { roomId: NET.roomId });
+      showToast("NPC criado!");
+    });
+
+    socket.on("npc:load", ({ npcId, sheet })=>{
+      if (NET.role!=="master") return;
+      SHEETS.set(npcId, sheet);
+      apply(sheet);
+    });
+
+    // Rolagens sincronizadas: manda pra sala quando rolar (teste ou pool)
+    function broadcastRoll(expr, total, detail, rollsInfo, base, mod){
+      if (!NET.roomId) return;
+      socket.emit("roll:send", { roomId: NET.roomId, payload: { expr, total, detail, rollsInfo, base, mod } });
+    }
+
+    socket.on("roll:broadcast", ({ from, payload, at })=>{
+      if (!roomRollFeed) return;
+      const when = new Date(at).toLocaleTimeString();
+      const card = document.createElement("div");
+      card.className="entry";
+      card.innerHTML = `
+        <div class="top">
+          <div class="expr" title="${payload.expr}">${from.role==="master"?"👑":"👤"} ${from.name} • ${when}</div>
+          <div class="sum">${payload.total}</div>
+        </div>
+        <div class="detail">${payload.expr}<br>${payload.detail}</div>
+      `;
+      roomRollFeed.prepend(card);
+    });
+
+    // Auto-send (tempo real) - player manda sempre, mestre só manda quando editando o alvo? (evita sobrescrever)
+    function autoSendSheet(){
+      if (!NET.roomId) return;
+      const sheet = collect();
+      NET.lastMySheet = sheet;
+
+      if (NET.role === "player"){
+        socket.emit("sheet:save", { roomId: NET.roomId, sheet });
+      } else {
+        // mestre: só mantém sua ficha local (não sobrescreve players)
+      }
+    }
+    let sendTimer = null;
+    function autoSendSheetDebounced(){
+      if (sendTimer) clearTimeout(sendTimer);
+      sendTimer = setTimeout(autoSendSheet, 350);
+    }
+
+    // dispara sync ao mexer em qualquer coisa (mantém HP/PD em tempo real no índice)
+    document.addEventListener("input", () => autoSendSheetDebounced());
+
+    // Intercepta renderResult para broadcast
+    const _renderResult = renderResult;
+    renderResult = function(expr, total, detail, rollsInfo, base, mod){
+      _renderResult(expr, total, detail, rollsInfo, base, mod);
+      broadcastRoll(expr, total, detail, rollsInfo, base, mod);
+    }
+
+
+    // ===== Init =====
+    restoreSectionOrder();
+    initTables();
+
+    // default moves/items se vazio
+    for (let i=0;i<4;i++) addMove({});
+    addItem({name:"", qty:1, desc:"", photo:""});
+
+    refreshPoolText();
+    recalcAll();
+    updateSelectionUI();
+
+    try{
+      const raw = localStorage.getItem(LS_KEY);
+      if (raw) apply(JSON.parse(raw));
+    }catch{}
+
+    renderResult("Pronto", "—", "Clique em um Status e em uma Perícia, depois role.", "—", "—", "—");
+  </script>
+</body>
+</html>
