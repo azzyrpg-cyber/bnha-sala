@@ -14,7 +14,7 @@ function safeRoomId(raw) {
   return String(raw || "").trim().slice(0, 32).replace(/[^a-zA-Z0-9_-]/g, "");
 }
 function ensureRoom(roomId) {
-  if (!rooms.has(roomId)) rooms.set(roomId, { masterSocketId: null, users: {}, sheets: {}, npcs: {} });
+  if (!rooms.has(roomId)) rooms.set(roomId, { masterSocketId: null, users: {}, sheets: {}, npcs: {}, rolls: [] });
   return rooms.get(roomId);
 }
 function userName(room, sid){ return room.users[sid]?.name || "Player"; }
@@ -61,6 +61,7 @@ io.on("connection", (socket) => {
     socket.join(id);
 
     socket.emit("room:joined", { roomId: id, role: "master", socketId: socket.id });
+    socket.emit("roll:history", { list: room.rolls || [] });
     emitIndex(id, room);
   });
 
@@ -75,6 +76,7 @@ io.on("connection", (socket) => {
     socket.join(id);
 
     socket.emit("room:joined", { roomId: id, role: "player", socketId: socket.id });
+    socket.emit("roll:history", { list: room.rolls || [] });
 
     // se já existe ficha salva desse socket (reconexão), manda
     if (room.sheets[socket.id]) {
@@ -189,12 +191,17 @@ io.on("connection", (socket) => {
     const user = room.users[socket.id];
     if (!user) return;
 
-    io.to(id).emit("roll:broadcast", {
+    const entry = {
       roomId: id,
       from: { socketId: socket.id, name: user.name, role: user.role },
       payload,
       at: Date.now()
-    });
+    };
+    room.rolls = room.rolls || [];
+    room.rolls.push(entry);
+    if (room.rolls.length > 50) room.rolls.shift();
+
+    io.to(id).emit("roll:broadcast", entry);
   });
 
   socket.on("disconnect", () => {
