@@ -3,18 +3,19 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Ficha U.A. • BNHA RPG</title>
+  <title>Ficha RPG Moderna • Sala Online</title>
   <script src="/socket.io/socket.io.js"></script>
   <style>
     :root{
-      --bg1:#06101f; --bg2:#07152a;
-      --txt:#edf3ff; --muted:#b7c6ee;
-      --line:rgba(255,255,255,.12);
-      --shadow: 0 14px 34px rgba(0,0,0,.35);
-      --radius:18px;
-      --uaBlue:#2b6bff; --uaGreen:#20e3a2; --uaYellow:#ffd24a; --uaRed:#ff3d6d;
-      --sel: rgba(43,107,255,.22);
-      --selLine: rgba(43,107,255,.60);
+      --bg1:#090d1a; --bg2:#141a2f;
+      --txt:#eef2ff; --muted:#a9b4d6;
+      --line:rgba(255,255,255,.10);
+      --shadow: 0 22px 40px rgba(3,6,20,.55);
+      --radius:20px;
+      --uaBlue:#4c7dff; --uaGreen:#1fe1b6; --uaYellow:#ffd166; --uaRed:#ff5d88;
+      --accent:#7a5cff; --accent2:#29d3ff;
+      --sel: rgba(122,92,255,.25);
+      --selLine: rgba(122,92,255,.65);
     }
     *{box-sizing:border-box}
     body{
@@ -78,6 +79,57 @@
       background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
       box-shadow: var(--shadow);
       overflow:hidden;
+    }
+    .summaryGrid{
+      display:grid;
+      gap:12px;
+    }
+    .summaryCard{
+      border:1px solid rgba(255,255,255,.12);
+      border-radius: 18px;
+      padding:14px;
+      background: radial-gradient(120% 140% at 10% 0%, rgba(122,92,255,.25), transparent 55%),
+                  linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.15));
+      display:grid;
+      gap:10px;
+    }
+    .summaryTitle{
+      font-weight:1200;
+      font-size:16px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .summaryMeta{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:8px;
+      font-size:13px;
+      color:var(--muted);
+    }
+    .summaryMeta strong{
+      color:var(--txt);
+      font-size:15px;
+    }
+    .summaryStatRow{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap:8px;
+    }
+    .statPill{
+      border:1px solid rgba(255,255,255,.12);
+      border-radius: 14px;
+      padding:8px 10px;
+      background: rgba(0,0,0,.25);
+      display:grid;
+      gap:4px;
+      font-size:12px;
+      color:var(--muted);
+    }
+    .statPill strong{
+      font-size:16px;
+      color:var(--txt);
+      letter-spacing:.3px;
     }
     .head{
       padding:14px 16px 10px;
@@ -163,6 +215,8 @@
       background: rgba(0,0,0,.25);
       border-color: rgba(255,255,255,.18);
       color: var(--txt);
+      flex: 1 1 0;
+      min-width: 0;
     }
     .resCard.hp .pill{border-color: rgba(255,61,109,.45); color: #ffd2dc;}
     .resCard.pd .pill{border-color: rgba(32,227,162,.45); color: #caffea;}
@@ -498,10 +552,10 @@
   <div class="wrap">
     <header class="topbar">
       <div class="brand">
-        <div class="logo">U.A</div>
+        <div class="logo">RPG</div>
         <div>
-          <h1>Ficha de Personagem • Boku no Hero RPG</h1>
-          <p>Clique no <b>Status</b> e na <b>Perícia</b> para selecionar. Depois aperte <b>Rolar Teste</b>.</p>
+          <h1>Ficha RPG Moderna • Central da Sala</h1>
+          <p>Selecione <b>Status</b> + <b>Perícia</b>, role, e todo mundo vê o resultado em tempo real.</p>
         </div>
       </div>
       <div style="display:flex; gap:10px; align-items:center;"><div class="chip" id="roomStatusChip">🏠 Sala: —</div><div class="chip" id="clock">⏱️ —</div></div>
@@ -597,27 +651,17 @@
                     <div class="resTop"><div class="name">❤ HP</div><div class="pill">CON×20</div></div>
                     <div class="numRow">
                       <input id="hp_now" type="number" value="20" min="0"/>
-                      <span class="pill">/</span>
-                      <input id="hp_max" type="number" class="readonly" readonly/>
                     </div>
-                    <div class="resMeter" aria-hidden="true"><div class="resFill" id="hp_fill"></div></div>
                   </div>
                   <div class="resCard pd">
                     <div class="resTop"><div class="name">⚡ PD</div><div class="pill">QUIRK×10 + INT/2</div></div>
                     <div class="numRow">
                       <input id="pd_now" type="number" value="11" min="0"/>
-                      <span class="pill">/</span>
-                      <input id="pd_max" type="number" class="readonly" readonly/>
                     </div>
-                    <div class="resMeter" aria-hidden="true"><div class="resFill" id="pd_fill"></div></div>
                     <div class="subRow">
                       <span class="subLabel">⭐ XP</span>
                       <input id="xp" value="XP 0/100"/>
                     </div>
-                  </div>
-                  <div class="resCard">
-                    <div class="resTop"><div class="name">📈 Nível</div><div class="pill">manual</div></div>
-                    <input id="level" type="number" value="0" min="0"/>
                   </div>
                 </div>
               </div>
@@ -897,6 +941,49 @@
         </div>
 
         <div class="body">
+          <details class="fold" open>
+            <summary>
+              <div class="sumLeft">
+                <span>⚡ Painel rápido</span>
+                <span class="help" data-tip="Resumo automático do personagem e dos recursos atuais.">?</span>
+              </div>
+              <div class="sumRight"><span style="color:var(--muted); font-weight:900;">abrir ▾</span></div>
+            </summary>
+            <div class="inside">
+              <div class="summaryGrid">
+                <div class="summaryCard">
+                  <div class="summaryTitle">🧠 Visão geral</div>
+                  <div class="summaryMeta">
+                    <div><strong id="summaryName">—</strong><br><span>Personagem</span></div>
+                    <div><strong id="summaryPlayer">—</strong><br><span>Jogador</span></div>
+                    <div><strong id="summaryClassroom">—</strong><br><span>Turma/Equipe</span></div>
+                    <div><strong id="summaryQuirk">—</strong><br><span>Poder/Origem</span></div>
+                  </div>
+                  <div class="summaryStatRow">
+                    <div class="statPill"><span>HP atual</span><strong id="summaryHp">—</strong></div>
+                    <div class="statPill"><span>PD atual</span><strong id="summaryPd">—</strong></div>
+                    <div class="statPill"><span>XP</span><strong id="summaryXp">—</strong></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <details class="fold" open>
+            <summary>
+              <div class="sumLeft">
+                <span>🌐 Rolagens da sala</span>
+                <span class="help" data-tip="Todas as rolagens aparecem aqui para a sala inteira.">?</span>
+              </div>
+              <div class="sumRight"><span style="color:var(--muted); font-weight:900;">abrir ▾</span></div>
+            </summary>
+            <div class="inside">
+              <div class="table" style="padding:12px; border-radius:16px;">
+                <div style="font-weight:1200; margin-bottom:8px;">📡 Tempo real</div>
+                <div id="roomRollFeed" style="display:grid; gap:10px;"></div>
+              </div>
+            </div>
+          </details>
 
           <details class="fold" id="masterPanel" open style="display:none;">
             <summary>
@@ -920,11 +1007,6 @@
                 <div style="color:var(--muted); font-size:12px; line-height:1.35; margin-top:10px;">
                   Dica: HP/PD ficam bem visíveis na seção <b>Identidade</b>. Você pode editar e salvar.
                 </div>
-              </div>
-
-              <div class="table" style="padding:12px; border-radius:16px; margin-top:12px;">
-                <div style="font-weight:1200; margin-bottom:8px;">📡 Rolagens da sala</div>
-                <div id="roomRollFeed" style="display:grid; gap:10px;"></div>
               </div>
             </div>
           </details>
@@ -1046,6 +1128,26 @@
     const selStatusBadge = el("selStatusBadge");
     const selSkillBadge  = el("selSkillBadge");
     const selectedPreview = el("selectedPreview");
+    const summaryName = el("summaryName");
+    const summaryPlayer = el("summaryPlayer");
+    const summaryClassroom = el("summaryClassroom");
+    const summaryQuirk = el("summaryQuirk");
+    const summaryHp = el("summaryHp");
+    const summaryPd = el("summaryPd");
+    const summaryXp = el("summaryXp");
+
+    function updateSummary(){
+      if (!summaryName) return;
+      const hpNow = el("hp_now").value || "—";
+      const pdNow = el("pd_now").value || "—";
+      summaryName.textContent = el("name").value || "—";
+      summaryPlayer.textContent = el("player").value || "—";
+      summaryClassroom.textContent = el("classroom").value || "—";
+      summaryQuirk.textContent = el("quirk_name").value || "—";
+      summaryHp.textContent = hpNow;
+      summaryPd.textContent = pdNow;
+      summaryXp.textContent = el("xp").value || "—";
+    }
 
     function statusNameFromKey(k){
       return STATUS.find(s=>s.key===k)?.name || "(nenhum)";
@@ -1134,22 +1236,8 @@
         if (t) t.value = getSkillTotal(s);
       });
 
-      const conT = getStatusTotal("con");
-      el("hp_max").value = Math.max(0, Math.floor(conT * 20));
-
-      const quirkT = getStatusTotal("quirk");
-      const intT = getStatusTotal("int");
-      el("pd_max").value = Math.max(0, Math.floor((quirkT * 10) + (intT / 2)));
-
-      el("hp_now").value = clamp(Number(el("hp_now").value)||0, 0, Number(el("hp_max").value)||999999);
-      el("pd_now").value = clamp(Number(el("pd_now").value)||0, 0, Number(el("pd_max").value)||999999);
-
-      const hpMax = Number(el("hp_max").value) || 0;
-      const pdMax = Number(el("pd_max").value) || 0;
-      const hpPct = hpMax > 0 ? (Number(el("hp_now").value) / hpMax) * 100 : 0;
-      const pdPct = pdMax > 0 ? (Number(el("pd_now").value) / pdMax) * 100 : 0;
-      el("hp_fill").style.width = `${clamp(hpPct, 0, 100)}%`;
-      el("pd_fill").style.width = `${clamp(pdPct, 0, 100)}%`;
+      el("hp_now").value = clamp(Number(el("hp_now").value)||0, 0, 999999);
+      el("pd_now").value = clamp(Number(el("pd_now").value)||0, 0, 999999);
 
       const used = SKILLS.reduce((acc, s) => acc + getSkillValue(s), 0);
       el("skill_points_used").value = used;
@@ -1689,7 +1777,6 @@
         quirk_name: el("quirk_name").value,
         hp_now: el("hp_now").value,
         pd_now: el("pd_now").value,
-        level: el("level").value,
         xp: el("xp").value,
         public_opinion: el("public_opinion").value,
 
@@ -1737,7 +1824,6 @@
       el("quirk_name").value = obj.quirk_name ?? "";
       el("hp_now").value = obj.hp_now ?? 20;
       el("pd_now").value = obj.pd_now ?? 11;
-      el("level").value = obj.level ?? 0;
       el("xp").value = obj.xp ?? "XP 0/100";
       el("public_opinion").value = obj.public_opinion ?? 0;
 
@@ -1802,6 +1888,7 @@
       if (!(obj.items||[]).length) { addItem({name:"", qty:1, desc:"", photo:""}); }
 
       recalcAll();
+      updateSummary();
       updateSelectionUI();
     }
 
@@ -1824,6 +1911,7 @@
     document.addEventListener("input", (e) => {
       const id = e.target?.id || "";
       if (id.startsWith("st_") || id.startsWith("sk_") || ["hp_now","pd_now"].includes(id)) recalcAll();
+      updateSummary();
       autoSaveDebounced();
     });
 
@@ -2011,14 +2099,14 @@
     });
 
     // Rolagens sincronizadas: manda pra sala quando rolar (teste ou pool)
-    function broadcastRoll(expr, total, detail, rollsInfo, base, mod){
-      if (!NET.roomId) return;
-      socket.emit("roll:send", { roomId: NET.roomId, payload: { expr, total, detail, rollsInfo, base, mod } });
-    }
-
-    socket.on("roll:broadcast", ({ from, payload, at })=>{
+    const roomRollIds = new Set();
+    function appendRoomRoll({ from, payload, at }){
       if (!roomRollFeed) return;
-      const when = new Date(at).toLocaleTimeString();
+      if (payload?.rollId){
+        if (roomRollIds.has(payload.rollId)) return;
+        roomRollIds.add(payload.rollId);
+      }
+      const when = new Date(at || Date.now()).toLocaleTimeString();
       const card = document.createElement("div");
       card.className="entry";
       card.innerHTML = `
@@ -2029,6 +2117,18 @@
         <div class="detail">${payload.expr}<br>${payload.detail}</div>
       `;
       roomRollFeed.prepend(card);
+    }
+
+    function broadcastRoll(expr, total, detail, rollsInfo, base, mod){
+      if (!NET.roomId) return;
+      const rollId = (globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2,8)}`);
+      const payload = { expr, total, detail, rollsInfo, base, mod, rollId };
+      appendRoomRoll({ from: { name: el("net_name").value || "Você", role: NET.role || "player" }, payload, at: Date.now() });
+      socket.emit("roll:send", { roomId: NET.roomId, payload });
+    }
+
+    socket.on("roll:broadcast", ({ from, payload, at })=>{
+      appendRoomRoll({ from, payload, at });
     });
 
     // Auto-send (tempo real) - player manda sempre, mestre só manda quando editando o alvo? (evita sobrescrever)
@@ -2070,6 +2170,7 @@
 
     refreshPoolText();
     recalcAll();
+    updateSummary();
     updateSelectionUI();
 
     try{
