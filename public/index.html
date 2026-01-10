@@ -113,7 +113,7 @@
     }
     .summaryStatRow{
       display:grid;
-      grid-template-columns: repeat(3, minmax(0,1fr));
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
       gap:8px;
     }
     .statPill{
@@ -970,6 +970,7 @@
                   <div class="summaryStatRow">
                     <div class="statPill"><span>HP atual</span><strong id="summaryHp">—</strong></div>
                     <div class="statPill"><span>PD atual</span><strong id="summaryPd">—</strong></div>
+                    <div class="statPill"><span>XP</span><strong id="summaryXp">—</strong></div>
                     <div class="statPill"><span>Nível</span><strong id="summaryLevel">—</strong></div>
                   </div>
                 </div>
@@ -1142,16 +1143,22 @@
     const summaryQuirk = el("summaryQuirk");
     const summaryHp = el("summaryHp");
     const summaryPd = el("summaryPd");
+    const summaryXp = el("summaryXp");
     const summaryLevel = el("summaryLevel");
 
     function updateSummary(){
       if (!summaryName) return;
+      const hpNow = el("hp_now").value || "—";
+      const hpMax = el("hp_max").value || "";
+      const pdNow = el("pd_now").value || "—";
+      const pdMax = el("pd_max").value || "";
       summaryName.textContent = el("name").value || "—";
       summaryPlayer.textContent = el("player").value || "—";
       summaryClassroom.textContent = el("classroom").value || "—";
       summaryQuirk.textContent = el("quirk_name").value || "—";
-      summaryHp.textContent = el("hp_now").value || "—";
-      summaryPd.textContent = el("pd_now").value || "—";
+      summaryHp.textContent = hpMax ? `${hpNow}/${hpMax}` : hpNow;
+      summaryPd.textContent = pdMax ? `${pdNow}/${pdMax}` : pdNow;
+      summaryXp.textContent = el("xp").value || "—";
       summaryLevel.textContent = el("level").value || "—";
     }
 
@@ -2121,14 +2128,14 @@
     });
 
     // Rolagens sincronizadas: manda pra sala quando rolar (teste ou pool)
-    function broadcastRoll(expr, total, detail, rollsInfo, base, mod){
-      if (!NET.roomId) return;
-      socket.emit("roll:send", { roomId: NET.roomId, payload: { expr, total, detail, rollsInfo, base, mod } });
-    }
-
-    socket.on("roll:broadcast", ({ from, payload, at })=>{
+    const roomRollIds = new Set();
+    function appendRoomRoll({ from, payload, at }){
       if (!roomRollFeed) return;
-      const when = new Date(at).toLocaleTimeString();
+      if (payload?.rollId){
+        if (roomRollIds.has(payload.rollId)) return;
+        roomRollIds.add(payload.rollId);
+      }
+      const when = new Date(at || Date.now()).toLocaleTimeString();
       const card = document.createElement("div");
       card.className="entry";
       card.innerHTML = `
@@ -2139,6 +2146,18 @@
         <div class="detail">${payload.expr}<br>${payload.detail}</div>
       `;
       roomRollFeed.prepend(card);
+    }
+
+    function broadcastRoll(expr, total, detail, rollsInfo, base, mod){
+      if (!NET.roomId) return;
+      const rollId = (globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2,8)}`);
+      const payload = { expr, total, detail, rollsInfo, base, mod, rollId };
+      appendRoomRoll({ from: { name: el("net_name").value || "Você", role: NET.role || "player" }, payload, at: Date.now() });
+      socket.emit("roll:send", { roomId: NET.roomId, payload });
+    }
+
+    socket.on("roll:broadcast", ({ from, payload, at })=>{
+      appendRoomRoll({ from, payload, at });
     });
 
     // Auto-send (tempo real) - player manda sempre, mestre só manda quando editando o alvo? (evita sobrescrever)
