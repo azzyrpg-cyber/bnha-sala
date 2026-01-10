@@ -654,7 +654,6 @@
                       <span class="pill">/</span>
                       <input id="hp_max" type="number" class="readonly" readonly/>
                     </div>
-                    <div class="resMeter" aria-hidden="true"><div class="resFill" id="hp_fill"></div></div>
                   </div>
                   <div class="resCard pd">
                     <div class="resTop"><div class="name">⚡ PD</div><div class="pill">QUIRK×10 + INT/2</div></div>
@@ -663,15 +662,10 @@
                       <span class="pill">/</span>
                       <input id="pd_max" type="number" class="readonly" readonly/>
                     </div>
-                    <div class="resMeter" aria-hidden="true"><div class="resFill" id="pd_fill"></div></div>
                     <div class="subRow">
                       <span class="subLabel">⭐ XP</span>
                       <input id="xp" value="XP 0/100"/>
                     </div>
-                  </div>
-                  <div class="resCard">
-                    <div class="resTop"><div class="name">📈 Nível</div><div class="pill">manual</div></div>
-                    <input id="level" type="number" value="0" min="0"/>
                   </div>
                 </div>
               </div>
@@ -973,7 +967,6 @@
                     <div class="statPill"><span>HP atual</span><strong id="summaryHp">—</strong></div>
                     <div class="statPill"><span>PD atual</span><strong id="summaryPd">—</strong></div>
                     <div class="statPill"><span>XP</span><strong id="summaryXp">—</strong></div>
-                    <div class="statPill"><span>Nível</span><strong id="summaryLevel">—</strong></div>
                   </div>
                 </div>
               </div>
@@ -1146,7 +1139,6 @@
     const summaryHp = el("summaryHp");
     const summaryPd = el("summaryPd");
     const summaryXp = el("summaryXp");
-    const summaryLevel = el("summaryLevel");
 
     function updateSummary(){
       if (!summaryName) return;
@@ -1161,7 +1153,6 @@
       summaryHp.textContent = hpMax ? `${hpNow}/${hpMax}` : hpNow;
       summaryPd.textContent = pdMax ? `${pdNow}/${pdMax}` : pdNow;
       summaryXp.textContent = el("xp").value || "—";
-      summaryLevel.textContent = el("level").value || "—";
     }
 
     function statusNameFromKey(k){
@@ -1260,13 +1251,6 @@
 
       el("hp_now").value = clamp(Number(el("hp_now").value)||0, 0, Number(el("hp_max").value)||999999);
       el("pd_now").value = clamp(Number(el("pd_now").value)||0, 0, Number(el("pd_max").value)||999999);
-
-      const hpMax = Number(el("hp_max").value) || 0;
-      const pdMax = Number(el("pd_max").value) || 0;
-      const hpPct = hpMax > 0 ? (Number(el("hp_now").value) / hpMax) * 100 : 0;
-      const pdPct = pdMax > 0 ? (Number(el("pd_now").value) / pdMax) * 100 : 0;
-      el("hp_fill").style.width = `${clamp(hpPct, 0, 100)}%`;
-      el("pd_fill").style.width = `${clamp(pdPct, 0, 100)}%`;
 
       const used = SKILLS.reduce((acc, s) => acc + getSkillValue(s), 0);
       el("skill_points_used").value = used;
@@ -1806,7 +1790,6 @@
         quirk_name: el("quirk_name").value,
         hp_now: el("hp_now").value,
         pd_now: el("pd_now").value,
-        level: el("level").value,
         xp: el("xp").value,
         public_opinion: el("public_opinion").value,
 
@@ -1854,7 +1837,6 @@
       el("quirk_name").value = obj.quirk_name ?? "";
       el("hp_now").value = obj.hp_now ?? 20;
       el("pd_now").value = obj.pd_now ?? 11;
-      el("level").value = obj.level ?? 0;
       el("xp").value = obj.xp ?? "XP 0/100";
       el("public_opinion").value = obj.public_opinion ?? 0;
 
