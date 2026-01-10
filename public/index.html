@@ -110,9 +110,20 @@
       outline:none;
       border-radius: 12px;
       padding:10px 10px;
-      background: rgba(255,255,255,.06);
+      background: rgba(6,12,24,.75);
       color:var(--txt);
       font-size:14px;
+    }
+    .field input::placeholder,
+    .field textarea::placeholder{
+      color: rgba(237,243,255,.6);
+    }
+    .field select{
+      color-scheme: dark;
+    }
+    .field select option{
+      background: #0b1222;
+      color: var(--txt);
     }
     .field textarea{min-height:92px; resize:vertical}
 
@@ -152,6 +163,7 @@
       text-align:center;
       background: rgba(0,0,0,.25);
       border-color: rgba(255,255,255,.18);
+      color: var(--txt);
     }
     .resCard.hp .pill{border-color: rgba(255,61,109,.45); color: #ffd2dc;}
     .resCard.pd .pill{border-color: rgba(32,227,162,.45); color: #caffea;}
@@ -278,7 +290,7 @@
       outline:none;
       border-radius: 12px;
       padding:10px 10px;
-      background: rgba(255,255,255,.06);
+      background: rgba(6,12,24,.75);
       color:var(--txt);
       font-size:14px;
     }
