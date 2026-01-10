@@ -127,8 +127,7 @@
     }
     .field textarea{min-height:92px; resize:vertical}
 
-    .resourceBar{display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-top:10px;}
-    @media (max-width: 520px){ .resourceBar{grid-template-columns:1fr 1fr} }
+    .resourceBar{display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:10px; margin-top:10px;}
     .resCard{
       border:1px solid var(--line);
       background: rgba(0,0,0,.16);
@@ -167,6 +166,24 @@
     }
     .resCard.hp .pill{border-color: rgba(255,61,109,.45); color: #ffd2dc;}
     .resCard.pd .pill{border-color: rgba(32,227,162,.45); color: #caffea;}
+    .resCard.pd .numRow input,
+    .resCard.pd .subRow input{
+      background: rgba(4,10,20,.85);
+      border-color: rgba(255,255,255,.28);
+      color: var(--txt);
+    }
+    .subRow{
+      display:grid;
+      grid-template-columns: auto 1fr;
+      gap:8px;
+      align-items:center;
+    }
+    .subLabel{
+      font-size:12px;
+      color: var(--muted);
+      font-weight:900;
+      letter-spacing:.2px;
+    }
     .resMeter{
       position:relative;
       height:10px;
@@ -586,14 +603,14 @@
                       <input id="pd_max" type="number" class="readonly" readonly/>
                     </div>
                     <div class="resMeter" aria-hidden="true"><div class="resFill" id="pd_fill"></div></div>
+                    <div class="subRow">
+                      <span class="subLabel">⭐ XP</span>
+                      <input id="xp" value="XP 0/100"/>
+                    </div>
                   </div>
                   <div class="resCard">
                     <div class="resTop"><div class="name">📈 Nível</div><div class="pill">manual</div></div>
                     <input id="level" type="number" value="0" min="0"/>
-                  </div>
-                  <div class="resCard">
-                    <div class="resTop"><div class="name">⭐ XP</div><div class="pill">texto</div></div>
-                    <input id="xp" value="XP 0/100"/>
                   </div>
                 </div>
               </div>
