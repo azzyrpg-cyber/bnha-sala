@@ -3,18 +3,19 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Ficha U.A. • BNHA RPG</title>
+  <title>Ficha RPG Moderna • Sala Online</title>
   <script src="/socket.io/socket.io.js"></script>
   <style>
     :root{
-      --bg1:#06101f; --bg2:#07152a;
-      --txt:#edf3ff; --muted:#b7c6ee;
-      --line:rgba(255,255,255,.12);
-      --shadow: 0 14px 34px rgba(0,0,0,.35);
-      --radius:18px;
-      --uaBlue:#2b6bff; --uaGreen:#20e3a2; --uaYellow:#ffd24a; --uaRed:#ff3d6d;
-      --sel: rgba(43,107,255,.22);
-      --selLine: rgba(43,107,255,.60);
+      --bg1:#090d1a; --bg2:#141a2f;
+      --txt:#eef2ff; --muted:#a9b4d6;
+      --line:rgba(255,255,255,.10);
+      --shadow: 0 22px 40px rgba(3,6,20,.55);
+      --radius:20px;
+      --uaBlue:#4c7dff; --uaGreen:#1fe1b6; --uaYellow:#ffd166; --uaRed:#ff5d88;
+      --accent:#7a5cff; --accent2:#29d3ff;
+      --sel: rgba(122,92,255,.25);
+      --selLine: rgba(122,92,255,.65);
     }
     *{box-sizing:border-box}
     body{
@@ -78,6 +79,57 @@
       background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
       box-shadow: var(--shadow);
       overflow:hidden;
+    }
+    .summaryGrid{
+      display:grid;
+      gap:12px;
+    }
+    .summaryCard{
+      border:1px solid rgba(255,255,255,.12);
+      border-radius: 18px;
+      padding:14px;
+      background: radial-gradient(120% 140% at 10% 0%, rgba(122,92,255,.25), transparent 55%),
+                  linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.15));
+      display:grid;
+      gap:10px;
+    }
+    .summaryTitle{
+      font-weight:1200;
+      font-size:16px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .summaryMeta{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:8px;
+      font-size:13px;
+      color:var(--muted);
+    }
+    .summaryMeta strong{
+      color:var(--txt);
+      font-size:15px;
+    }
+    .summaryStatRow{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap:8px;
+    }
+    .statPill{
+      border:1px solid rgba(255,255,255,.12);
+      border-radius: 14px;
+      padding:8px 10px;
+      background: rgba(0,0,0,.25);
+      display:grid;
+      gap:4px;
+      font-size:12px;
+      color:var(--muted);
+    }
+    .statPill strong{
+      font-size:16px;
+      color:var(--txt);
+      letter-spacing:.3px;
     }
     .head{
       padding:14px 16px 10px;
@@ -498,10 +550,10 @@
   <div class="wrap">
     <header class="topbar">
       <div class="brand">
-        <div class="logo">U.A</div>
+        <div class="logo">RPG</div>
         <div>
-          <h1>Ficha de Personagem • Boku no Hero RPG</h1>
-          <p>Clique no <b>Status</b> e na <b>Perícia</b> para selecionar. Depois aperte <b>Rolar Teste</b>.</p>
+          <h1>Ficha RPG Moderna • Central da Sala</h1>
+          <p>Selecione <b>Status</b> + <b>Perícia</b>, role, e todo mundo vê o resultado em tempo real.</p>
         </div>
       </div>
       <div style="display:flex; gap:10px; align-items:center;"><div class="chip" id="roomStatusChip">🏠 Sala: —</div><div class="chip" id="clock">⏱️ —</div></div>
@@ -897,6 +949,49 @@
         </div>
 
         <div class="body">
+          <details class="fold" open>
+            <summary>
+              <div class="sumLeft">
+                <span>⚡ Painel rápido</span>
+                <span class="help" data-tip="Resumo automático do personagem e dos recursos atuais.">?</span>
+              </div>
+              <div class="sumRight"><span style="color:var(--muted); font-weight:900;">abrir ▾</span></div>
+            </summary>
+            <div class="inside">
+              <div class="summaryGrid">
+                <div class="summaryCard">
+                  <div class="summaryTitle">🧠 Visão geral</div>
+                  <div class="summaryMeta">
+                    <div><strong id="summaryName">—</strong><br><span>Personagem</span></div>
+                    <div><strong id="summaryPlayer">—</strong><br><span>Jogador</span></div>
+                    <div><strong id="summaryClassroom">—</strong><br><span>Turma/Equipe</span></div>
+                    <div><strong id="summaryQuirk">—</strong><br><span>Poder/Origem</span></div>
+                  </div>
+                  <div class="summaryStatRow">
+                    <div class="statPill"><span>HP atual</span><strong id="summaryHp">—</strong></div>
+                    <div class="statPill"><span>PD atual</span><strong id="summaryPd">—</strong></div>
+                    <div class="statPill"><span>Nível</span><strong id="summaryLevel">—</strong></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <details class="fold" open>
+            <summary>
+              <div class="sumLeft">
+                <span>🌐 Rolagens da sala</span>
+                <span class="help" data-tip="Todas as rolagens aparecem aqui para a sala inteira.">?</span>
+              </div>
+              <div class="sumRight"><span style="color:var(--muted); font-weight:900;">abrir ▾</span></div>
+            </summary>
+            <div class="inside">
+              <div class="table" style="padding:12px; border-radius:16px;">
+                <div style="font-weight:1200; margin-bottom:8px;">📡 Tempo real</div>
+                <div id="roomRollFeed" style="display:grid; gap:10px;"></div>
+              </div>
+            </div>
+          </details>
 
           <details class="fold" id="masterPanel" open style="display:none;">
             <summary>
@@ -920,11 +1015,6 @@
                 <div style="color:var(--muted); font-size:12px; line-height:1.35; margin-top:10px;">
                   Dica: HP/PD ficam bem visíveis na seção <b>Identidade</b>. Você pode editar e salvar.
                 </div>
-              </div>
-
-              <div class="table" style="padding:12px; border-radius:16px; margin-top:12px;">
-                <div style="font-weight:1200; margin-bottom:8px;">📡 Rolagens da sala</div>
-                <div id="roomRollFeed" style="display:grid; gap:10px;"></div>
               </div>
             </div>
           </details>
@@ -1046,6 +1136,24 @@
     const selStatusBadge = el("selStatusBadge");
     const selSkillBadge  = el("selSkillBadge");
     const selectedPreview = el("selectedPreview");
+    const summaryName = el("summaryName");
+    const summaryPlayer = el("summaryPlayer");
+    const summaryClassroom = el("summaryClassroom");
+    const summaryQuirk = el("summaryQuirk");
+    const summaryHp = el("summaryHp");
+    const summaryPd = el("summaryPd");
+    const summaryLevel = el("summaryLevel");
+
+    function updateSummary(){
+      if (!summaryName) return;
+      summaryName.textContent = el("name").value || "—";
+      summaryPlayer.textContent = el("player").value || "—";
+      summaryClassroom.textContent = el("classroom").value || "—";
+      summaryQuirk.textContent = el("quirk_name").value || "—";
+      summaryHp.textContent = el("hp_now").value || "—";
+      summaryPd.textContent = el("pd_now").value || "—";
+      summaryLevel.textContent = el("level").value || "—";
+    }
 
     function statusNameFromKey(k){
       return STATUS.find(s=>s.key===k)?.name || "(nenhum)";
@@ -1802,6 +1910,7 @@
       if (!(obj.items||[]).length) { addItem({name:"", qty:1, desc:"", photo:""}); }
 
       recalcAll();
+      updateSummary();
       updateSelectionUI();
     }
 
@@ -1824,6 +1933,7 @@
     document.addEventListener("input", (e) => {
       const id = e.target?.id || "";
       if (id.startsWith("st_") || id.startsWith("sk_") || ["hp_now","pd_now"].includes(id)) recalcAll();
+      updateSummary();
       autoSaveDebounced();
     });
 
@@ -2070,6 +2180,7 @@
 
     refreshPoolText();
     recalcAll();
+    updateSummary();
     updateSelectionUI();
 
     try{
