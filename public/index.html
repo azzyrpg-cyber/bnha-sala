@@ -398,7 +398,7 @@
       position:fixed;
       right:26px;
       bottom:26px;
-      width:280px;
+      width:220px;
       z-index:998;
       cursor:default;
       user-select:none;
@@ -408,6 +408,30 @@
     }
     .resourceFloat .resCard{
       box-shadow: var(--shadow);
+    }
+    .resourceFloat.compact{
+      width:180px;
+    }
+    .resourceFloat.compact .resCard{
+      padding:8px;
+      gap:6px;
+    }
+    .resourceFloat.compact .resTop .name{
+      font-size:12px;
+    }
+    .resourceFloat.compact .pill{
+      padding:4px 8px;
+      font-size:10px;
+    }
+    .resourceFloat.compact .numRow{
+      gap:6px;
+    }
+    .resourceFloat.compact .numRow input{
+      padding:6px 8px;
+      font-size:12px;
+    }
+    .resourceFloat.compact .resMeter{
+      height:8px;
     }
     .resourceFloatHeader{
       display:flex;
@@ -1375,7 +1399,10 @@
   <div class="resourceFloat panel" id="resourceFloat" style="display:none;">
     <div class="resourceFloatHeader">
       <div class="chip">🎯 Recursos</div>
-      <button class="miniBtn" id="resourceLock">🔒 Fixar</button>
+      <div style="display:flex; gap:6px;">
+        <button class="miniBtn" id="resourceCompact">↕ Compactar</button>
+        <button class="miniBtn" id="resourceLock">🔒 Fixar</button>
+      </div>
     </div>
     <div class="resCard hp">
       <div class="resTop"><div class="name">❤ HP</div><div class="pill">CON×20</div></div>
@@ -3098,7 +3125,9 @@
     // ===== Recursos flutuantes =====
     const resourceFloat = el("resourceFloat");
     const resourceLock = el("resourceLock");
+    const resourceCompact = el("resourceCompact");
     const RESOURCE_POS_KEY = "bnha_resource_pos_v1";
+    const RESOURCE_COMPACT_KEY = "bnha_resource_compact_v1";
     let resourceLocked = true;
 
     function setResourcePosition(x, y){
@@ -3127,10 +3156,21 @@
       if (resourceLock) resourceLock.textContent = locked ? "🔒 Fixar" : "🟢 Mover";
       if (resourceFloat) resourceFloat.classList.toggle("dragging", !locked);
     }
+    function setResourceCompactState(compact){
+      if (!resourceFloat) return;
+      resourceFloat.classList.toggle("compact", compact);
+      if (resourceCompact) resourceCompact.textContent = compact ? "↕ Expandir" : "↕ Compactar";
+      localStorage.setItem(RESOURCE_COMPACT_KEY, compact ? "1" : "0");
+    }
 
     resourceLock?.addEventListener("click", (e) => {
       e.preventDefault();
       setResourceLockState(!resourceLocked);
+    });
+    resourceCompact?.addEventListener("click", (e) => {
+      e.preventDefault();
+      const compact = !resourceFloat?.classList.contains("compact");
+      setResourceCompactState(Boolean(compact));
     });
 
     resourceFloat?.addEventListener("mousedown", (e) => {
@@ -3411,6 +3451,8 @@
       resourceFloat.style.display = "none";
       loadResourcePosition();
       setResourceLockState(true);
+      const compactSaved = localStorage.getItem(RESOURCE_COMPACT_KEY) === "1";
+      setResourceCompactState(compactSaved);
       updateResourceBars();
     }
 
