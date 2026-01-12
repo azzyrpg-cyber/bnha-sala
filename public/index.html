@@ -401,7 +401,7 @@
       position:fixed;
       right:26px;
       bottom:26px;
-      width:260px;
+      width:340px;
       z-index:998;
       cursor:default;
       user-select:none;
@@ -412,31 +412,6 @@
     .resourceFloat .resCard{
       box-shadow: var(--shadow);
     }
-    .resourceFloat.compact{
-      width:230px;
-    }
-    .resourceFloat.compact .resCard{
-      padding:8px;
-      gap:6px;
-    }
-    .resourceFloat.compact .resTop .name{
-      font-size:12px;
-    }
-    .resourceFloat.compact .pill{
-      padding:4px 8px;
-      font-size:10px;
-    }
-    .resourceFloat.compact .numRow{
-      gap:4px;
-    }
-    .resourceFloat.compact .numRow input{
-      padding:6px;
-      font-size:11px;
-      min-width:0;
-    }
-    .resourceFloat.compact .resMeter{
-      height:8px;
-    }
     .resourceFloatHeader{
       display:flex;
       align-items:center;
@@ -446,6 +421,76 @@
     }
     .resourceFloatHeader .miniBtn{
       padding:6px 8px;
+    }
+    .resourceTable{
+      display:grid;
+      gap:0;
+      border:2px solid rgba(0,0,0,.8);
+      border-radius:8px;
+      overflow:hidden;
+      background: rgba(0,0,0,.45);
+    }
+    .resourceRow{
+      display:grid;
+      grid-template-columns: 64px 1fr 1fr 1fr;
+    }
+    .resourceCell{
+      border-right:2px solid rgba(0,0,0,.7);
+      border-bottom:2px solid rgba(0,0,0,.7);
+      padding:8px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:1200;
+      background: rgba(255,255,255,.04);
+    }
+    .resourceRow:last-child .resourceCell{
+      border-bottom:none;
+    }
+    .resourceCell:last-child{
+      border-right:none;
+    }
+    .resourceHead{
+      background: #121212;
+      color: #fff;
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.4px;
+    }
+    .resourceIcon{
+      font-size:18px;
+      justify-content:center;
+      color:#fff;
+    }
+    .resourceIcon.hp{background:#c41c1c;}
+    .resourceIcon.pd{background:#3b74d6;}
+    .resourceCell input{
+      width:100%;
+      border:1px solid rgba(255,255,255,.2);
+      border-radius:6px;
+      padding:6px 8px;
+      text-align:center;
+      background: rgba(6,12,24,.8);
+      color: var(--txt);
+      font-weight:1200;
+    }
+    .resourceFooter{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:8px;
+      background: rgba(0,0,0,.25);
+      border-top:2px solid rgba(0,0,0,.7);
+    }
+    .resourceFooter input{
+      flex:1;
+      border:1px solid rgba(255,255,255,.2);
+      border-radius:6px;
+      padding:6px 8px;
+      background: rgba(6,12,24,.8);
+      color: var(--txt);
+      font-weight:1200;
+      text-align:center;
     }
     .subRow{
       display:grid;
@@ -867,14 +912,7 @@
                   </div>
                 </div>
 
-                <div class="resourceBar">
-                  <div class="resCard pd" style="grid-column: 1 / -1;">
-                    <div class="subRow">
-                      <span class="subLabel">⭐ XP</span>
-                      <input id="xp" value="XP 0/100"/>
-                    </div>
-                  </div>
-                </div>
+                <div class="resourceBar"></div>
               </div>
             </details>
 
@@ -1404,27 +1442,32 @@
     <div class="resourceFloatHeader">
       <div class="chip">🎯 Recursos</div>
       <div style="display:flex; gap:6px;">
-        <button class="miniBtn" id="resourceCompact">↕ Compactar</button>
         <button class="miniBtn" id="resourceLock">🔒 Fixar</button>
       </div>
     </div>
-    <div class="resCard hp">
-      <div class="resTop"><div class="name">❤ HP</div><div class="pill">CON×20</div></div>
-      <div class="numRow">
-        <input id="hp_now" type="number" value="20" min="0"/>
-        <span class="numSep">/</span>
-        <input id="hp_max" type="number" value="20" min="1"/>
+    <div class="resourceTable">
+      <div class="resourceRow">
+        <div class="resourceCell resourceHead"> </div>
+        <div class="resourceCell resourceHead">Atual</div>
+        <div class="resourceCell resourceHead">Max</div>
+        <div class="resourceCell resourceHead">Level</div>
       </div>
-      <div class="resMeter"><div class="resFill" id="hp_fill"></div></div>
-    </div>
-    <div class="resCard pd" style="margin-top:10px;">
-      <div class="resTop"><div class="name">⚡ PD</div><div class="pill">QUIRK×10 + INT/2</div></div>
-      <div class="numRow">
-        <input id="pd_now" type="number" value="11" min="0"/>
-        <span class="numSep">/</span>
-        <input id="pd_max" type="number" value="11" min="1"/>
+      <div class="resourceRow">
+        <div class="resourceCell resourceIcon hp">❤</div>
+        <div class="resourceCell"><input id="hp_now" type="number" value="20" min="0"/></div>
+        <div class="resourceCell"><input id="hp_max" type="number" value="20" min="1"/></div>
+        <div class="resourceCell"><input id="level" type="number" value="0" min="0"/></div>
       </div>
-      <div class="resMeter"><div class="resFill" id="pd_fill"></div></div>
+      <div class="resourceRow">
+        <div class="resourceCell resourceIcon pd">⚡</div>
+        <div class="resourceCell"><input id="pd_now" type="number" value="11" min="0"/></div>
+        <div class="resourceCell"><input id="pd_max" type="number" value="11" min="1"/></div>
+        <div class="resourceCell"><input id="xp" value="XP 0/100"/></div>
+      </div>
+      <div class="resourceFooter">
+        <span>💰</span>
+        <input id="money" value="R$100"/>
+      </div>
     </div>
   </div>
 
@@ -2270,16 +2313,7 @@
       if (!Number.isFinite(now) || !Number.isFinite(max)) return "—";
       return `${now}/${max}`;
     }
-    function updateResourceBars(){
-      const hpNow = Number(el("hp_now").value) || 0;
-      const hpMax = Number(el("hp_max").value) || 1;
-      const pdNow = Number(el("pd_now").value) || 0;
-      const pdMax = Number(el("pd_max").value) || 1;
-      const hpFill = el("hp_fill");
-      const pdFill = el("pd_fill");
-      if (hpFill) hpFill.style.width = `${Math.min(100, (hpNow / Math.max(1, hpMax)) * 100)}%`;
-      if (pdFill) pdFill.style.width = `${Math.min(100, (pdNow / Math.max(1, pdMax)) * 100)}%`;
-    }
+    function updateResourceBars(){}
 
     function updateSummary(){
       if (!summaryName) return;
@@ -2957,6 +2991,8 @@
         pd_now: el("pd_now").value,
         pd_max: el("pd_max").value,
         xp: el("xp").value,
+        level: el("level").value,
+        money: el("money").value,
         public_opinion: el("public_opinion").value,
         combat_initiative: el("combat_initiative").value,
         combat_defense: el("combat_defense").value,
@@ -3013,6 +3049,8 @@
       el("pd_now").value = obj.pd_now ?? 11;
       el("pd_max").value = obj.pd_max ?? 11;
       el("xp").value = obj.xp ?? "XP 0/100";
+      el("level").value = obj.level ?? 0;
+      el("money").value = obj.money ?? "R$100";
       el("public_opinion").value = obj.public_opinion ?? 0;
       el("combat_initiative").value = obj.combat_initiative ?? "";
       el("combat_defense").value = obj.combat_defense ?? "";
@@ -3129,9 +3167,7 @@
     // ===== Recursos flutuantes =====
     const resourceFloat = el("resourceFloat");
     const resourceLock = el("resourceLock");
-    const resourceCompact = el("resourceCompact");
     const RESOURCE_POS_KEY = "bnha_resource_pos_v1";
-    const RESOURCE_COMPACT_KEY = "bnha_resource_compact_v1";
     let resourceLocked = true;
 
     function setResourcePosition(x, y){
@@ -3160,21 +3196,9 @@
       if (resourceLock) resourceLock.textContent = locked ? "🔒 Fixar" : "🟢 Mover";
       if (resourceFloat) resourceFloat.classList.toggle("dragging", !locked);
     }
-    function setResourceCompactState(compact){
-      if (!resourceFloat) return;
-      resourceFloat.classList.toggle("compact", compact);
-      if (resourceCompact) resourceCompact.textContent = compact ? "↕ Expandir" : "↕ Compactar";
-      localStorage.setItem(RESOURCE_COMPACT_KEY, compact ? "1" : "0");
-    }
-
     resourceLock?.addEventListener("click", (e) => {
       e.preventDefault();
       setResourceLockState(!resourceLocked);
-    });
-    resourceCompact?.addEventListener("click", (e) => {
-      e.preventDefault();
-      const compact = !resourceFloat?.classList.contains("compact");
-      setResourceCompactState(Boolean(compact));
     });
 
     resourceFloat?.addEventListener("mousedown", (e) => {
@@ -3455,8 +3479,6 @@
       resourceFloat.style.display = "none";
       loadResourcePosition();
       setResourceLockState(true);
-      const compactSaved = localStorage.getItem(RESOURCE_COMPACT_KEY) === "1";
-      setResourceCompactState(compactSaved);
       updateResourceBars();
     }
 
