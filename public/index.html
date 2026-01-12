@@ -382,6 +382,10 @@
       flex: 1 1 0;
       min-width: 0;
     }
+    .numSep{
+      font-weight:1200;
+      color:var(--muted);
+    }
     .resCard.hp .pill{border-color: rgba(255,61,109,.45); color: #ffd2dc;}
     .resCard.pd .pill{border-color: rgba(32,227,162,.45); color: #caffea;}
     .resCard.pd .numRow input,
@@ -815,13 +819,19 @@
                     <div class="resTop"><div class="name">❤ HP</div><div class="pill">CON×20</div></div>
                     <div class="numRow">
                       <input id="hp_now" type="number" value="20" min="0"/>
+                      <span class="numSep">/</span>
+                      <input id="hp_max" type="number" value="20" min="1"/>
                     </div>
+                    <div class="resMeter"><div class="resFill" id="hp_fill"></div></div>
                   </div>
                   <div class="resCard pd">
                     <div class="resTop"><div class="name">⚡ PD</div><div class="pill">QUIRK×10 + INT/2</div></div>
                     <div class="numRow">
                       <input id="pd_now" type="number" value="11" min="0"/>
+                      <span class="numSep">/</span>
+                      <input id="pd_max" type="number" value="11" min="1"/>
                     </div>
+                    <div class="resMeter"><div class="resFill" id="pd_fill"></div></div>
                     <div class="subRow">
                       <span class="subLabel">⭐ XP</span>
                       <input id="xp" value="XP 0/100"/>
@@ -2191,16 +2201,33 @@
       "cond_bleeding"
     ];
 
+    function formatResource(now, max){
+      if (!Number.isFinite(now) || !Number.isFinite(max)) return "—";
+      return `${now}/${max}`;
+    }
+    function updateResourceBars(){
+      const hpNow = Number(el("hp_now").value) || 0;
+      const hpMax = Number(el("hp_max").value) || 1;
+      const pdNow = Number(el("pd_now").value) || 0;
+      const pdMax = Number(el("pd_max").value) || 1;
+      const hpFill = el("hp_fill");
+      const pdFill = el("pd_fill");
+      if (hpFill) hpFill.style.width = `${Math.min(100, (hpNow / Math.max(1, hpMax)) * 100)}%`;
+      if (pdFill) pdFill.style.width = `${Math.min(100, (pdNow / Math.max(1, pdMax)) * 100)}%`;
+    }
+
     function updateSummary(){
       if (!summaryName) return;
-      const hpNow = el("hp_now").value || "—";
-      const pdNow = el("pd_now").value || "—";
+      const hpNow = Number(el("hp_now").value);
+      const hpMax = Number(el("hp_max").value);
+      const pdNow = Number(el("pd_now").value);
+      const pdMax = Number(el("pd_max").value);
       summaryName.textContent = el("name").value || "—";
       summaryPlayer.textContent = el("player").value || "—";
       summaryClassroom.textContent = el("classroom").value || "—";
       summaryQuirk.textContent = el("quirk_name").value || "—";
-      summaryHp.textContent = hpNow;
-      summaryPd.textContent = pdNow;
+      summaryHp.textContent = formatResource(hpNow, hpMax);
+      summaryPd.textContent = formatResource(pdNow, pdMax);
       summaryXp.textContent = el("xp").value || "—";
       if (summaryInitiative){
         summaryInitiative.textContent = el("combat_initiative").value || "—";
@@ -2306,8 +2333,11 @@
         if (t) t.value = getSkillTotal(s);
       });
 
-      el("hp_now").value = clamp(Number(el("hp_now").value)||0, 0, 999999);
-      el("pd_now").value = clamp(Number(el("pd_now").value)||0, 0, 999999);
+      el("hp_max").value = clamp(Number(el("hp_max").value)||1, 1, 999999);
+      el("pd_max").value = clamp(Number(el("pd_max").value)||1, 1, 999999);
+      el("hp_now").value = clamp(Number(el("hp_now").value)||0, 0, Number(el("hp_max").value)||1);
+      el("pd_now").value = clamp(Number(el("pd_now").value)||0, 0, Number(el("pd_max").value)||1);
+      updateResourceBars();
 
       const used = SKILLS.reduce((acc, s) => acc + getSkillValue(s), 0);
       el("skill_points_used").value = used;
@@ -2858,7 +2888,9 @@
         classroom: el("classroom").value,
         quirk_name: el("quirk_name").value,
         hp_now: el("hp_now").value,
+        hp_max: el("hp_max").value,
         pd_now: el("pd_now").value,
+        pd_max: el("pd_max").value,
         xp: el("xp").value,
         public_opinion: el("public_opinion").value,
         combat_initiative: el("combat_initiative").value,
@@ -2912,7 +2944,9 @@
       el("classroom").value = obj.classroom ?? "";
       el("quirk_name").value = obj.quirk_name ?? "";
       el("hp_now").value = obj.hp_now ?? 20;
+      el("hp_max").value = obj.hp_max ?? 20;
       el("pd_now").value = obj.pd_now ?? 11;
+      el("pd_max").value = obj.pd_max ?? 11;
       el("xp").value = obj.xp ?? "XP 0/100";
       el("public_opinion").value = obj.public_opinion ?? 0;
       el("combat_initiative").value = obj.combat_initiative ?? "";
@@ -3022,7 +3056,7 @@
 
     document.addEventListener("input", (e) => {
       const id = e.target?.id || "";
-      if (id.startsWith("st_") || id.startsWith("sk_") || ["hp_now","pd_now"].includes(id)) recalcAll();
+      if (id.startsWith("st_") || id.startsWith("sk_") || ["hp_now","hp_max","pd_now","pd_max"].includes(id)) recalcAll();
       updateSummary();
       autoSaveDebounced();
     });
