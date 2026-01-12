@@ -234,6 +234,14 @@
       background: rgba(0,0,0,.22);
       overflow:hidden;
     }
+    .codexCategory details{
+      border:none;
+    }
+    .codexCategory summary{
+      list-style:none;
+      cursor:pointer;
+    }
+    .codexCategory summary::-webkit-details-marker{display:none}
     .codexCategoryTitle{
       padding:10px 12px;
       font-weight:1200;
@@ -241,6 +249,16 @@
       letter-spacing:.3px;
       background: rgba(0,0,0,.35);
       border-bottom:1px solid rgba(255,255,255,.08);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+    }
+    .codexCategoryTitle span{
+      color:var(--muted);
+      font-size:11px;
+      font-weight:900;
+      text-transform:uppercase;
     }
     .codexGrid{
       display:grid;
@@ -1398,6 +1416,23 @@
         dice: { skill: { Luta: 1 } }
       },
       {
+        id: "forca_bruta",
+        name: "Força Bruta",
+        category: "Combate Físico",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["+1 dado em Atletismo"],
+        dice: { skill: { Atletismo: 1 } }
+      },
+      {
+        id: "guarda_implacavel",
+        name: "Guarda Implacável",
+        category: "Combate Físico",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["+1 dado em testes para resistir empurrões ou agarrões"]
+      },
+      {
         id: "impacto_heroico",
         name: "Impacto Heroico",
         category: "Combate Físico",
@@ -1450,6 +1485,30 @@
         dice: { skill: { Acrobacia: 1 } }
       },
       {
+        id: "arrancada_rapida",
+        name: "Arrancada Rápida",
+        category: "Mobilidade & Reflexos",
+        kind: "positivo",
+        type: "Ativável",
+        cost: "3 PV",
+        effects: ["+2m de deslocamento até o fim do turno"],
+        ability: {
+          name: "ARRANCADA RÁPIDA",
+          dmg: "—",
+          cost: "3 PV",
+          rng: "+2m",
+          desc: "Ativação: Reação\nEfeito: +2m de deslocamento até o fim do turno"
+        }
+      },
+      {
+        id: "equilibrio_sobrenatural",
+        name: "Equilíbrio Sobrenatural",
+        category: "Mobilidade & Reflexos",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["+1 dado em testes de equilíbrio ou quedas"]
+      },
+      {
         id: "maos_precisas",
         name: "Mãos Precisas",
         category: "Precisão & Técnica",
@@ -1492,6 +1551,23 @@
         dice: { skill: { Tecnologia: 1 } }
       },
       {
+        id: "cirurgiao_de_campo",
+        name: "Cirurgião de Campo",
+        category: "Precisão & Técnica",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["+1 dado em Medicina"],
+        dice: { skill: { Medicina: 1 } }
+      },
+      {
+        id: "mecanica_precisa",
+        name: "Mecânica Precisa",
+        category: "Precisão & Técnica",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["Ataques à distância ignoram -1 dado de penalidade por cobertura leve"]
+      },
+      {
         id: "corpo_resistente",
         name: "Corpo Resistente",
         category: "Resistência & Sobrevivência",
@@ -1531,6 +1607,31 @@
         kind: "positivo",
         type: "Passiva",
         effects: ["Ignora o primeiro ponto de dano leve por rodada"]
+      },
+      {
+        id: "pulmoes_de_aco",
+        name: "Pulmões de Aço",
+        category: "Resistência & Sobrevivência",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["+1 dado em testes de sobrevivência e fôlego"],
+        dice: { skill: { Sobrevivência: 1 } }
+      },
+      {
+        id: "recuperacao_heroica",
+        name: "Recuperação Heroica",
+        category: "Resistência & Sobrevivência",
+        kind: "positivo",
+        type: "Ativável",
+        limit: "1x por cena",
+        effects: ["Recupera 1d6 PV ao cair abaixo de 50%"],
+        ability: {
+          name: "RECUPERAÇÃO HEROICA",
+          dmg: "1d6 PV",
+          cost: "—",
+          rng: "—",
+          desc: "Ativação: Reação\nEfeito: Recupera 1d6 PV ao cair abaixo de 50% (1x por cena)"
+        }
       },
       {
         id: "estrategista_nato",
@@ -1575,6 +1676,24 @@
         effects: ["Após ver uma técnica: +1 dado no próximo teste de Luta contra o mesmo alvo"]
       },
       {
+        id: "pressentimento",
+        name: "Pressentimento",
+        category: "Estratégia & Mente",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["+1 dado em Intuição"],
+        dice: { skill: { Intuição: 1 } }
+      },
+      {
+        id: "analise_forense",
+        name: "Análise Forense",
+        category: "Estratégia & Mente",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["+1 dado em Ciências"],
+        dice: { skill: { Ciências: 1 } }
+      },
+      {
         id: "controle_refinado",
         name: "Controle Refinado",
         category: "Quirk & Heroísmo",
@@ -1616,6 +1735,23 @@
         kind: "positivo",
         type: "Passiva",
         effects: ["+1 dado em testes de Quirk após falhar (1x por cena)"]
+      },
+      {
+        id: "aura_inspiradora",
+        name: "Aura Inspiradora",
+        category: "Quirk & Heroísmo",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["+1 dado em Diplomacia"],
+        dice: { skill: { Diplomacia: 1 } }
+      },
+      {
+        id: "sangue_heroico",
+        name: "Sangue Heroico",
+        category: "Quirk & Heroísmo",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["1x por cena: +1 dado em qualquer teste físico"]
       },
       {
         id: "sinergia_corporal",
@@ -1693,6 +1829,94 @@
         type: "Negativo",
         opposite: "folego_aco",
         effects: ["Após 2 rodadas de esforço: -1 dado em testes físicos"]
+      },
+      {
+        id: "mira_instavel",
+        name: "Mira Instável",
+        category: "Traços Negativos",
+        kind: "negativo",
+        type: "Negativo",
+        opposite: "mira_heroica",
+        effects: ["-1 dado em Pontaria"],
+        dice: { skill: { Pontaria: -1 } }
+      },
+      {
+        id: "passos_pesados",
+        name: "Passos Pesados",
+        category: "Traços Negativos",
+        kind: "negativo",
+        type: "Negativo",
+        opposite: "passo_silencioso",
+        effects: ["-1 dado em Furtividade"],
+        dice: { skill: { Furtividade: -1 } }
+      },
+      {
+        id: "fraqueza_articular",
+        name: "Fraqueza Articular",
+        category: "Traços Negativos",
+        kind: "negativo",
+        type: "Negativo",
+        opposite: "salto_urbano",
+        effects: ["-1 dado em Acrobacia"],
+        dice: { skill: { Acrobacia: -1 } }
+      },
+      {
+        id: "atavismo_social",
+        name: "Travado Social",
+        category: "Traços Negativos",
+        kind: "negativo",
+        type: "Negativo",
+        opposite: "aura_inspiradora",
+        effects: ["-1 dado em Diplomacia"],
+        dice: { skill: { Diplomacia: -1 } }
+      },
+      {
+        id: "reflexo_tardio",
+        name: "Reflexo Tardio",
+        category: "Traços Negativos",
+        kind: "negativo",
+        type: "Negativo",
+        opposite: "pressentimento",
+        effects: ["-1 dado em Intuição"],
+        dice: { skill: { Intuição: -1 } }
+      },
+      {
+        id: "mente_nublada",
+        name: "Mente Nublada",
+        category: "Traços Negativos",
+        kind: "negativo",
+        type: "Negativo",
+        opposite: "analise_forense",
+        effects: ["-1 dado em Ciências"],
+        dice: { skill: { Ciências: -1 } }
+      },
+      {
+        id: "pulmao_curto",
+        name: "Pulmão Curto",
+        category: "Traços Negativos",
+        kind: "negativo",
+        type: "Negativo",
+        opposite: "pulmoes_de_aco",
+        effects: ["-1 dado em Sobrevivência"],
+        dice: { skill: { Sobrevivência: -1 } }
+      },
+      {
+        id: "dor_cronica",
+        name: "Dor Crônica",
+        category: "Traços Negativos",
+        kind: "negativo",
+        type: "Negativo",
+        opposite: "pele_tenaz",
+        effects: ["Ao sofrer dano: -1 dado no próximo teste físico"]
+      },
+      {
+        id: "impulso_descontrolado",
+        name: "Impulso Descontrolado",
+        category: "Traços Negativos",
+        kind: "negativo",
+        type: "Negativo",
+        opposite: "controle_refinado",
+        effects: ["Quando usa Quirk: -1 dado se estiver em pressão"]
       },
       {
         id: "mente_dispersiva",
@@ -1793,9 +2017,15 @@
       categories.forEach(cat => {
         const wrap = document.createElement("div");
         wrap.className = "codexCategory";
-        const title = document.createElement("div");
-        title.className = "codexCategoryTitle";
-        title.textContent = `📂 ${cat}`;
+        const details = document.createElement("details");
+        details.open = false;
+        const summary = document.createElement("summary");
+        summary.className = "codexCategoryTitle";
+        const summaryTitle = document.createElement("div");
+        summaryTitle.textContent = `📂 ${cat}`;
+        const summaryHint = document.createElement("span");
+        summaryHint.textContent = "abrir ▾";
+        summary.append(summaryTitle, summaryHint);
         const grid = document.createElement("div");
         grid.className = "codexGrid";
         TRAITS.filter(t => t.category === cat).forEach(t => {
@@ -1841,7 +2071,8 @@
           grid.appendChild(card);
         });
 
-        wrap.append(title, grid);
+        details.append(summary, grid);
+        wrap.append(details);
         codexTraits.append(wrap);
       });
       updateTraitsUI();
@@ -1863,7 +2094,9 @@
         codexTraits.querySelectorAll("input[data-trait-id]").forEach(input => {
           const trait = traitById(input.dataset.traitId);
           input.checked = selectedTraits.has(input.dataset.traitId);
-          input.disabled = Boolean(trait?.opposite && selectedTraits.has(trait.opposite));
+          const isPositive = trait?.kind === "positivo";
+          const blocksPositive = isPositive && !input.checked && negatives <= positives;
+          input.disabled = Boolean(trait?.opposite && selectedTraits.has(trait.opposite)) || blocksPositive;
         });
       }
     }
@@ -1902,6 +2135,15 @@
       if (!trait) return;
 
       if (input.checked){
+        if (trait.kind === "positivo"){
+          const positives = Array.from(selectedTraits).map(traitById).filter(t => t && traitIsPositive(t)).length;
+          const negatives = Array.from(selectedTraits).map(traitById).filter(t => t && !traitIsPositive(t)).length;
+          if (negatives <= positives){
+            input.checked = false;
+            showToast("Escolha um Traço Negativo antes do Positivo.");
+            return;
+          }
+        }
         if (trait.opposite && selectedTraits.has(trait.opposite)){
           input.checked = false;
           showToast("Traços opostos não podem ser escolhidos juntos.");
