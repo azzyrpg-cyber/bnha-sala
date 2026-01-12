@@ -223,25 +223,48 @@
       color: var(--txt);
       box-shadow: 0 8px 16px rgba(122,92,255,.2);
     }
-    .codexGrid{
+    .codexList{
       display:grid;
-      gap:12px;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap:14px;
       margin-top:10px;
     }
-    .codexCard{
-      border:1px solid rgba(255,255,255,.14);
+    .codexCategory{
+      border:1px solid rgba(255,255,255,.1);
       border-radius:16px;
-      padding:12px;
-      background: rgba(0,0,0,.2);
+      background: rgba(0,0,0,.22);
+      overflow:hidden;
+    }
+    .codexCategoryTitle{
+      padding:10px 12px;
+      font-weight:1200;
+      font-size:12px;
+      letter-spacing:.3px;
+      background: rgba(0,0,0,.35);
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .codexGrid{
       display:grid;
-      gap:8px;
+      gap:10px;
+      padding:10px;
+    }
+    .codexCard{
+      border:1px solid rgba(255,255,255,.12);
+      border-left:4px solid rgba(122,92,255,.7);
+      border-radius:10px;
+      padding:10px 12px;
+      background: linear-gradient(180deg, rgba(10,16,28,.9), rgba(0,0,0,.35));
+      display:grid;
+      gap:6px;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.2);
+    }
+    .codexCard.negative{
+      border-left-color: rgba(255,93,136,.75);
     }
     .codexHeader{
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:8px;
+      gap:10px;
     }
     .codexHeader h4{
       margin:0;
@@ -257,28 +280,44 @@
     }
     .codexTag{
       border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.05);
-      padding:4px 8px;
-      border-radius:999px;
+      background: rgba(0,0,0,.25);
+      padding:3px 8px;
+      border-radius:6px;
+      text-transform:uppercase;
+      letter-spacing:.3px;
     }
     .codexSelect{
-      display:flex;
+      display:inline-flex;
       align-items:center;
       gap:8px;
       font-size:12px;
       font-weight:1100;
     }
     .codexSelect input{
-      accent-color: var(--accent2);
-    }
-    .codexList{
+      appearance:none;
+      width:16px;
+      height:16px;
+      border:1px solid rgba(255,255,255,.35);
+      border-radius:3px;
+      background: rgba(0,0,0,.6);
       display:grid;
-      gap:10px;
-      margin-top:10px;
+      place-items:center;
+      cursor:pointer;
+    }
+    .codexSelect input:checked{
+      background: linear-gradient(180deg, rgba(41,211,255,.85), rgba(122,92,255,.85));
+      border-color: rgba(41,211,255,.9);
+      box-shadow: 0 0 0 2px rgba(41,211,255,.2);
+    }
+    .codexSelect input:checked::after{
+      content:"✓";
+      font-size:12px;
+      color:#061018;
+      font-weight:1200;
     }
     .codexRule{
       border:1px solid rgba(255,255,255,.12);
-      border-radius:14px;
+      border-radius:12px;
       padding:10px 12px;
       background: rgba(0,0,0,.18);
       font-size:12px;
@@ -1350,6 +1389,31 @@
         effects: ["+1 dado em testes de Agarrar / Imobilizar"]
       },
       {
+        id: "punho_preciso",
+        name: "Punho Preciso",
+        category: "Combate Físico",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["+1 dado em testes de Luta"],
+        dice: { skill: { Luta: 1 } }
+      },
+      {
+        id: "impacto_heroico",
+        name: "Impacto Heroico",
+        category: "Combate Físico",
+        kind: "positivo",
+        type: "Ativável",
+        cost: "4 PV",
+        effects: ["Ataque corpo a corpo causa +1d6 de dano"],
+        ability: {
+          name: "IMPACTO HEROICO",
+          dmg: "+1d6",
+          cost: "4 PV",
+          rng: "Corpo a corpo",
+          desc: "Ativação: Ação\nEfeito: Ataque corpo a corpo causa +1d6 de dano"
+        }
+      },
+      {
         id: "reflexos_felinos",
         name: "Reflexos Felinos",
         category: "Mobilidade & Reflexos",
@@ -1366,6 +1430,24 @@
         kind: "positivo",
         type: "Passiva",
         effects: ["Penalidades por terreno difícil são reduzidas pela metade"]
+      },
+      {
+        id: "passo_silencioso",
+        name: "Passo Silencioso",
+        category: "Mobilidade & Reflexos",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["+1 dado em Furtividade"],
+        dice: { skill: { Furtividade: 1 } }
+      },
+      {
+        id: "salto_urbano",
+        name: "Salto Urbano",
+        category: "Mobilidade & Reflexos",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["+1 dado em Acrobacia"],
+        dice: { skill: { Acrobacia: 1 } }
       },
       {
         id: "maos_precisas",
@@ -1390,6 +1472,24 @@
         kind: "positivo",
         type: "Passiva",
         effects: ["Após 1 rodada observando um alvo: +1d6 para acertar ataques contra ele"]
+      },
+      {
+        id: "mira_heroica",
+        name: "Mira Heroica",
+        category: "Precisão & Técnica",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["+1 dado em Pontaria"],
+        dice: { skill: { Pontaria: 1 } }
+      },
+      {
+        id: "pericia_mecanica",
+        name: "Perícia Mecânica",
+        category: "Precisão & Técnica",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["+1 dado em Tecnologia"],
+        dice: { skill: { Tecnologia: 1 } }
       },
       {
         id: "corpo_resistente",
@@ -1425,6 +1525,14 @@
         }
       },
       {
+        id: "pele_tenaz",
+        name: "Pele Tenaz",
+        category: "Resistência & Sobrevivência",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["Ignora o primeiro ponto de dano leve por rodada"]
+      },
+      {
         id: "estrategista_nato",
         name: "Estrategista Nato",
         category: "Estratégia & Mente",
@@ -1448,6 +1556,23 @@
         type: "Passiva",
         opposite: "limitacao_psicologica",
         effects: ["+1 dado em testes contra medo, intimidação e controle mental"]
+      },
+      {
+        id: "olho_tatico",
+        name: "Olho Tático",
+        category: "Estratégia & Mente",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["+1 dado em Investigação"],
+        dice: { skill: { Investigação: 1 } }
+      },
+      {
+        id: "memoria_marcial",
+        name: "Memória Marcial",
+        category: "Estratégia & Mente",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["Após ver uma técnica: +1 dado no próximo teste de Luta contra o mesmo alvo"]
       },
       {
         id: "controle_refinado",
@@ -1483,6 +1608,14 @@
         type: "Ativável",
         limit: "1x por situação",
         effects: ["Uso alternativo do Quirk com +1 a +3 dados (narrador decide)"]
+      },
+      {
+        id: "foco_quirk",
+        name: "Foco de Quirk",
+        category: "Quirk & Heroísmo",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["+1 dado em testes de Quirk após falhar (1x por cena)"]
       },
       {
         id: "sinergia_corporal",
@@ -1542,6 +1675,60 @@
         opposite: "potencia_muscular",
         effects: ["-1 dado em testes de Força"],
         dice: { status: { for: -1 } }
+      },
+      {
+        id: "impulsivo",
+        name: "Impulsivo",
+        category: "Traços Negativos",
+        kind: "negativo",
+        type: "Negativo",
+        opposite: "olho_tatico",
+        effects: ["Primeiro turno: -1 dado em testes de estratégia/planejamento"]
+      },
+      {
+        id: "cansaco_cronico",
+        name: "Cansaço Crônico",
+        category: "Traços Negativos",
+        kind: "negativo",
+        type: "Negativo",
+        opposite: "folego_aco",
+        effects: ["Após 2 rodadas de esforço: -1 dado em testes físicos"]
+      },
+      {
+        id: "mente_dispersiva",
+        name: "Mente Dispersiva",
+        category: "Traços Negativos",
+        kind: "negativo",
+        type: "Negativo",
+        opposite: "vontade_inabalavel",
+        effects: ["-1 dado em testes de Intuição ou Investigação"]
+      },
+      {
+        id: "visao_tunel",
+        name: "Visão de Túnel",
+        category: "Traços Negativos",
+        kind: "negativo",
+        type: "Negativo",
+        opposite: "reflexos_felinos",
+        effects: ["Quando foca em um alvo: -1 dado em Reação contra outros inimigos"]
+      },
+      {
+        id: "panico_multidao",
+        name: "Pânico de Multidão",
+        category: "Traços Negativos",
+        kind: "negativo",
+        type: "Negativo",
+        opposite: "espirito_heroico",
+        effects: ["Em cenas com muitos civis: -1 dado em testes sociais"]
+      },
+      {
+        id: "corpo_fragilizado",
+        name: "Corpo Fragilizado",
+        category: "Traços Negativos",
+        kind: "negativo",
+        type: "Negativo",
+        opposite: "corpo_resistente",
+        effects: ["-2 na DT de Defesa Física"]
       },
       {
         id: "quirk_instavel",
@@ -1604,14 +1791,16 @@
       codexTraits.innerHTML = "";
       const categories = Array.from(new Set(TRAITS.map(t => t.category)));
       categories.forEach(cat => {
+        const wrap = document.createElement("div");
+        wrap.className = "codexCategory";
         const title = document.createElement("div");
-        title.style.fontWeight = "1200";
+        title.className = "codexCategoryTitle";
         title.textContent = `📂 ${cat}`;
         const grid = document.createElement("div");
         grid.className = "codexGrid";
         TRAITS.filter(t => t.category === cat).forEach(t => {
           const card = document.createElement("div");
-          card.className = "codexCard";
+          card.className = `codexCard ${t.kind === "negativo" ? "negative" : ""}`;
 
           const header = document.createElement("div");
           header.className = "codexHeader";
@@ -1652,7 +1841,8 @@
           grid.appendChild(card);
         });
 
-        codexTraits.append(title, grid);
+        wrap.append(title, grid);
+        codexTraits.append(wrap);
       });
       updateTraitsUI();
     }
