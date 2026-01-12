@@ -131,6 +131,17 @@
       color:var(--txt);
       letter-spacing:.3px;
     }
+    .statPill small{
+      font-size:11px;
+      color:var(--muted);
+      font-weight:900;
+      letter-spacing:.2px;
+    }
+    #roomRollFeed{
+      max-height: 320px;
+      overflow:auto;
+      padding-right:4px;
+    }
     .head{
       padding:14px 16px 10px;
       display:flex; align-items:center; justify-content:space-between; gap:12px;
@@ -178,6 +189,102 @@
       color: var(--txt);
     }
     .field textarea{min-height:92px; resize:vertical}
+    .conditionGrid{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:10px;
+    }
+    .conditionTag{
+      position:relative;
+      cursor:pointer;
+    }
+    .conditionTag input{
+      position:absolute;
+      opacity:0;
+      pointer-events:none;
+    }
+    .conditionTag span{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.22);
+      padding:8px 12px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:1100;
+      color:var(--muted);
+      transition: border-color .2s ease, background .2s ease, color .2s ease;
+    }
+    .conditionTag input:checked + span{
+      border-color: var(--selLine);
+      background: var(--sel);
+      color: var(--txt);
+      box-shadow: 0 8px 16px rgba(122,92,255,.2);
+    }
+    .codexGrid{
+      display:grid;
+      gap:12px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      margin-top:10px;
+    }
+    .codexCard{
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:16px;
+      padding:12px;
+      background: rgba(0,0,0,.2);
+      display:grid;
+      gap:8px;
+    }
+    .codexHeader{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+    }
+    .codexHeader h4{
+      margin:0;
+      font-size:13px;
+      letter-spacing:.2px;
+    }
+    .codexTags{
+      display:flex;
+      gap:6px;
+      flex-wrap:wrap;
+      font-size:11px;
+      color:var(--muted);
+    }
+    .codexTag{
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      padding:4px 8px;
+      border-radius:999px;
+    }
+    .codexSelect{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:12px;
+      font-weight:1100;
+    }
+    .codexSelect input{
+      accent-color: var(--accent2);
+    }
+    .codexList{
+      display:grid;
+      gap:10px;
+      margin-top:10px;
+    }
+    .codexRule{
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:14px;
+      padding:10px 12px;
+      background: rgba(0,0,0,.18);
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.4;
+    }
 
     .resourceBar{display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:10px; margin-top:10px;}
     .resCard{
@@ -667,6 +774,103 @@
               </div>
             </details>
 
+            <!-- Combate & Defesas -->
+            <details class="fold" data-sec="combate_defesas" open>
+              <summary>
+                <div class="sumLeft">
+                  <span>⚔️ Combate & Defesas</span>
+                  <span class="help" data-tip="Ajustes rápidos de combate e condições do personagem.">?</span>
+                </div>
+                <div class="sumRight">
+                  <span class="dragHint">reordenar</span>
+                  <button class="miniBtn secUp" type="button" title="Subir">↑</button>
+                  <button class="miniBtn secDown" type="button" title="Descer">↓</button>
+                  <span style="color:var(--muted); font-weight:900;">abrir ▾</span>
+                </div>
+              </summary>
+              <div class="inside">
+                <div class="row" style="margin-top:0">
+                  <div class="field">
+                    <label>Iniciativa <span class="help" data-tip="Bônus de iniciativa ou valor fixo.">?</span></label>
+                    <input id="combat_initiative" placeholder="+0"/>
+                  </div>
+                  <div class="field">
+                    <label>Defesa <span class="help" data-tip="Defesa base ou CA do personagem.">?</span></label>
+                    <input id="combat_defense" placeholder="10"/>
+                  </div>
+                  <div class="field">
+                    <label>Armadura <span class="help" data-tip="Redução de dano ou armadura equipada.">?</span></label>
+                    <input id="combat_armor" placeholder="Leve / 2"/>
+                  </div>
+                  <div class="field">
+                    <label>Resistência <span class="help" data-tip="Resistência física ou mágica.">?</span></label>
+                    <input id="combat_resistance" placeholder="Físico +2"/>
+                  </div>
+                  <div class="field">
+                    <label>Deslocamento <span class="help" data-tip="Velocidade por turno.">?</span></label>
+                    <input id="combat_speed" placeholder="9m"/>
+                  </div>
+                  <div class="field w12">
+                    <label>Condições ativas <span class="help" data-tip="Marque as condições atuais para lembrar no combate.">?</span></label>
+                    <div class="conditionGrid">
+                      <label class="conditionTag"><input id="cond_injured" type="checkbox"/><span>Ferido</span></label>
+                      <label class="conditionTag"><input id="cond_exhausted" type="checkbox"/><span>Exausto</span></label>
+                      <label class="conditionTag"><input id="cond_stunned" type="checkbox"/><span>Atordoado</span></label>
+                      <label class="conditionTag"><input id="cond_frightened" type="checkbox"/><span>Amedrontado</span></label>
+                      <label class="conditionTag"><input id="cond_poisoned" type="checkbox"/><span>Envenenado</span></label>
+                      <label class="conditionTag"><input id="cond_burning" type="checkbox"/><span>Queimando</span></label>
+                      <label class="conditionTag"><input id="cond_frozen" type="checkbox"/><span>Congelado</span></label>
+                      <label class="conditionTag"><input id="cond_bleeding" type="checkbox"/><span>Sangrando</span></label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <!-- Codex Traços & Passivas -->
+            <details class="fold" data-sec="codex_tracos" open>
+              <summary>
+                <div class="sumLeft">
+                  <span>📘 Codex — Traços & Passivas</span>
+                  <span class="help" data-tip="Selecione traços positivos/negativos para liberar bônus e habilidades automáticas.">?</span>
+                </div>
+                <div class="sumRight">
+                  <span class="dragHint">reordenar</span>
+                  <button class="miniBtn secUp" type="button" title="Subir">↑</button>
+                  <button class="miniBtn secDown" type="button" title="Descer">↓</button>
+                  <span style="color:var(--muted); font-weight:900;">abrir ▾</span>
+                </div>
+              </summary>
+              <div class="inside">
+                <div class="codexRule">
+                  <b>🔒 Regras gerais (fixo)</b><br/>
+                  • Para cada 1 Traço Positivo, escolha 1 Traço Negativo.<br/>
+                  • Traços Passivos ficam sempre ativos. Traços Ativáveis consomem PV.<br/>
+                  • Traços Opostos não podem ser escolhidos juntos.<br/>
+                  • Bônus máximos vindos de Traços: +2 dados por tipo de rolagem.<br/>
+                  • Traços que concedem habilidades aparecem automaticamente na aba <b>Habilidades</b>.<br/>
+                  • Se interpretar bem um Traço Negativo: +2 PV ou +1 dado bônus (1x por cena).
+                </div>
+
+                <div class="row" style="margin-top:10px;">
+                  <div class="field w6">
+                    <label>Traços positivos selecionados</label>
+                    <input id="traitsPosCount" class="readonly" readonly value="0"/>
+                  </div>
+                  <div class="field w6">
+                    <label>Traços negativos selecionados</label>
+                    <input id="traitsNegCount" class="readonly" readonly value="0"/>
+                  </div>
+                  <div class="field w12">
+                    <label>Status do balanceamento</label>
+                    <input id="traitsBalanceStatus" class="readonly" readonly value="Selecione traços para balancear"/>
+                  </div>
+                </div>
+
+                <div class="codexList" id="codexTraits"></div>
+              </div>
+            </details>
+
             <!-- Status -->
             <details class="fold" data-sec="status" open>
               <summary>
@@ -965,6 +1169,21 @@
                     <div class="statPill"><span>XP</span><strong id="summaryXp">—</strong></div>
                   </div>
                 </div>
+                <div class="summaryCard">
+                  <div class="summaryTitle">⚔️ Combate rápido</div>
+                  <div class="summaryStatRow">
+                    <div class="statPill"><span>Iniciativa</span><strong id="summaryInitiative">—</strong></div>
+                    <div class="statPill"><span>Defesa</span><strong id="summaryDefense">—</strong></div>
+                    <div class="statPill"><span>Armadura</span><strong id="summaryArmor">—</strong></div>
+                    <div class="statPill"><span>Resistência</span><strong id="summaryResistance">—</strong></div>
+                    <div class="statPill"><span>Deslocamento</span><strong id="summarySpeed">—</strong></div>
+                    <div class="statPill">
+                      <span>Condições</span>
+                      <strong id="summaryConditions">—</strong>
+                      <small id="summaryConditionsList">—</small>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </details>
@@ -1103,6 +1322,255 @@
       "Diplomacia","Enganação","Furtividade","Intimidação","Investigação","Intuição",
       "Luta","Medicina","Pilotagem","Pontaria","Sobrevivência","Tecnologia"
     ];
+    const TRAITS = [
+      {
+        id: "potencia_muscular",
+        name: "Potência Muscular",
+        category: "Combate Físico",
+        kind: "positivo",
+        type: "Passiva",
+        opposite: "musculatura_fragil",
+        effects: ["+1 dado em testes de Força", "+1 dado em dano corpo a corpo"],
+        dice: { status: { for: 1 } }
+      },
+      {
+        id: "golpe_demolidor",
+        name: "Golpe Demolidor",
+        category: "Combate Físico",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["Crítico: -2 DT Defesa Física do alvo até o fim do combate (acumula até -5)"]
+      },
+      {
+        id: "agarre_firme",
+        name: "Agarre Firme",
+        category: "Combate Físico",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["+1 dado em testes de Agarrar / Imobilizar"]
+      },
+      {
+        id: "reflexos_felinos",
+        name: "Reflexos Felinos",
+        category: "Mobilidade & Reflexos",
+        kind: "positivo",
+        type: "Passiva",
+        opposite: "ativacao_lenta",
+        effects: ["+1 dado em Esquiva", "+1 dado em Reação", "+1 dado em testes de Destreza"],
+        dice: { status: { des: 1 } }
+      },
+      {
+        id: "movimento_fluido",
+        name: "Movimento Fluido",
+        category: "Mobilidade & Reflexos",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["Penalidades por terreno difícil são reduzidas pela metade"]
+      },
+      {
+        id: "maos_precisas",
+        name: "Mãos Precisas",
+        category: "Precisão & Técnica",
+        kind: "positivo",
+        type: "Ativável",
+        cost: "5 PV",
+        effects: ["Ataques à distância causam +1d6 de dano até errar um ataque ou fim da cena"],
+        ability: {
+          name: "MÃOS PRECISAS",
+          dmg: "+1d6",
+          cost: "5 PV",
+          rng: "Distância",
+          desc: "Ativação: Ação\nEfeito: Ataques à distância causam +1d6 de dano\nDuração: Até errar um ataque ou fim da cena"
+        }
+      },
+      {
+        id: "analise_combate",
+        name: "Análise de Combate",
+        category: "Precisão & Técnica",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["Após 1 rodada observando um alvo: +1d6 para acertar ataques contra ele"]
+      },
+      {
+        id: "corpo_resistente",
+        name: "Corpo Resistente",
+        category: "Resistência & Sobrevivência",
+        kind: "positivo",
+        type: "Passiva",
+        opposite: "corpo_fragilizado",
+        effects: ["+2 na DT de Defesa Física"]
+      },
+      {
+        id: "folego_aco",
+        name: "Fôlego de Aço",
+        category: "Resistência & Sobrevivência",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["Ao chegar a 0 PV: age normalmente por 2 rodadas (1x por combate)"]
+      },
+      {
+        id: "recuperacao_rapida",
+        name: "Recuperação Rápida",
+        category: "Resistência & Sobrevivência",
+        kind: "positivo",
+        type: "Ativável",
+        limit: "2x por combate",
+        effects: ["+1d10 em habilidades de cura"],
+        ability: {
+          name: "RECUPERAÇÃO RÁPIDA",
+          dmg: "+1d10",
+          cost: "Ação",
+          rng: "—",
+          desc: "Ativação: Ação\nEfeito: +1d10 em habilidades de cura\nLimite: 2x por combate"
+        }
+      },
+      {
+        id: "estrategista_nato",
+        name: "Estrategista Nato",
+        category: "Estratégia & Mente",
+        kind: "positivo",
+        type: "Ativável",
+        cost: "5 PV",
+        effects: ["Ataques combinados recebem +1d6 (acerto ou dano)"],
+        ability: {
+          name: "ESTRATÉGIA DE COMBATE",
+          dmg: "+1d6",
+          cost: "5 PV",
+          rng: "—",
+          desc: "Efeito: Ataques combinados recebem +1d6 (acerto ou dano)"
+        }
+      },
+      {
+        id: "vontade_inabalavel",
+        name: "Vontade Inabalável",
+        category: "Estratégia & Mente",
+        kind: "positivo",
+        type: "Passiva",
+        opposite: "limitacao_psicologica",
+        effects: ["+1 dado em testes contra medo, intimidação e controle mental"]
+      },
+      {
+        id: "controle_refinado",
+        name: "Controle Refinado",
+        category: "Quirk & Heroísmo",
+        kind: "positivo",
+        type: "Passiva",
+        opposite: "quirk_instavel",
+        effects: ["+1 dado em testes de Controle de Quirk"],
+        dice: { status: { quirk: 1 } }
+      },
+      {
+        id: "potencia_expandida",
+        name: "Potência Expandida",
+        category: "Quirk & Heroísmo",
+        kind: "positivo",
+        type: "Ativável",
+        cost: "5 PV",
+        effects: ["+2 casas de alcance ou área do Quirk por 1 turno"],
+        ability: {
+          name: "POTÊNCIA EXPANDIDA",
+          dmg: "—",
+          cost: "5 PV",
+          rng: "+2 casas",
+          desc: "Efeito: +2 casas de alcance ou área do Quirk\nDuração: 1 turno"
+        }
+      },
+      {
+        id: "uso_criativo",
+        name: "Uso Criativo",
+        category: "Quirk & Heroísmo",
+        kind: "positivo",
+        type: "Ativável",
+        limit: "1x por situação",
+        effects: ["Uso alternativo do Quirk com +1 a +3 dados (narrador decide)"]
+      },
+      {
+        id: "sinergia_corporal",
+        name: "Sinergia Corporal",
+        category: "Quirk & Heroísmo",
+        kind: "positivo",
+        type: "Ativável",
+        cost: "5 PV",
+        effects: ["Ataque físico + Quirk causa +1d6 de dano"],
+        ability: {
+          name: "SINERGIA CORPORAL",
+          dmg: "+1d6",
+          cost: "5 PV",
+          rng: "—",
+          desc: "Efeito: Ataque físico + Quirk causa +1d6 de dano"
+        }
+      },
+      {
+        id: "espirito_heroico",
+        name: "Espírito Heroico",
+        category: "Quirk & Heroísmo",
+        kind: "positivo",
+        type: "Reação",
+        effects: ["Intercepta ataque contra aliado ou civil próximo (1x por rodada)"],
+        ability: {
+          name: "ESPÍRITO HEROICO",
+          dmg: "—",
+          cost: "Reação",
+          rng: "Curto",
+          desc: "Efeito: Intercepta ataque contra aliado ou civil próximo\nLimite: 1x por rodada"
+        }
+      },
+      {
+        id: "nunca_desistir",
+        name: "Nunca Desistir",
+        category: "Quirk & Heroísmo",
+        kind: "positivo",
+        type: "Passiva",
+        opposite: "limite_fisico_baixo",
+        effects: ["Com 25% ou menos de PV: +2 pontos temporários em todos os status"]
+      },
+      {
+        id: "ultimo_heroi",
+        name: "O Último Herói",
+        category: "Quirk & Heroísmo",
+        kind: "positivo",
+        type: "Passiva",
+        limit: "Única na campanha",
+        effects: ["Antes de morrer: contra-ataque com crítico garantido; depois entra em estado Morrendo"]
+      },
+      {
+        id: "musculatura_fragil",
+        name: "Musculatura Frágil",
+        category: "Traços Negativos",
+        kind: "negativo",
+        type: "Negativo",
+        opposite: "potencia_muscular",
+        effects: ["-1 dado em testes de Força"],
+        dice: { status: { for: -1 } }
+      },
+      {
+        id: "quirk_instavel",
+        name: "Quirk Instável",
+        category: "Traços Negativos",
+        kind: "negativo",
+        type: "Negativo",
+        opposite: "controle_refinado",
+        effects: ["Em 1 natural usando o Quirk: falha automática + efeito colateral narrativo"]
+      },
+      {
+        id: "limite_fisico_baixo",
+        name: "Limite Físico Baixo",
+        category: "Traços Negativos",
+        kind: "negativo",
+        type: "Negativo",
+        opposite: "nunca_desistir",
+        effects: ["Abaixo de 50% PV: -2 na DT de Defesa"]
+      },
+      {
+        id: "ativacao_lenta",
+        name: "Ativação Lenta",
+        category: "Traços Negativos",
+        kind: "negativo",
+        type: "Negativo",
+        opposite: "reflexos_felinos",
+        effects: ["Primeira rodada de combate: Quirk indisponível"]
+      }
+    ];
 
     // ===== Helpers =====
     const el = (id) => document.getElementById(id);
@@ -1121,6 +1589,143 @@
       return (n > 0 ? "+" : "") + n;
     }
 
+    // ===== Codex (Traços) =====
+    const codexTraits = el("codexTraits");
+    const traitsPosCount = el("traitsPosCount");
+    const traitsNegCount = el("traitsNegCount");
+    const traitsBalanceStatus = el("traitsBalanceStatus");
+    const selectedTraits = new Set();
+
+    function traitById(id){ return TRAITS.find(t => t.id === id); }
+    function traitIsPositive(t){ return t.kind === "positivo"; }
+
+    function renderCodex(){
+      if (!codexTraits) return;
+      codexTraits.innerHTML = "";
+      const categories = Array.from(new Set(TRAITS.map(t => t.category)));
+      categories.forEach(cat => {
+        const title = document.createElement("div");
+        title.style.fontWeight = "1200";
+        title.textContent = `📂 ${cat}`;
+        const grid = document.createElement("div");
+        grid.className = "codexGrid";
+        TRAITS.filter(t => t.category === cat).forEach(t => {
+          const card = document.createElement("div");
+          card.className = "codexCard";
+
+          const header = document.createElement("div");
+          header.className = "codexHeader";
+          const h4 = document.createElement("h4");
+          h4.textContent = t.name;
+          const select = document.createElement("label");
+          select.className = "codexSelect";
+          const input = document.createElement("input");
+          input.type = "checkbox";
+          input.dataset.traitId = t.id;
+          input.checked = selectedTraits.has(t.id);
+          if (t.opposite && selectedTraits.has(t.opposite)) input.disabled = true;
+          const text = document.createElement("span");
+          text.textContent = "Selecionar";
+          select.append(input, text);
+          header.append(h4, select);
+
+          const tags = document.createElement("div");
+          tags.className = "codexTags";
+          tags.innerHTML = `
+            <span class="codexTag">${t.kind === "positivo" ? "Positivo" : "Negativo"}</span>
+            <span class="codexTag">${t.type}</span>
+            ${t.cost ? `<span class="codexTag">Custo: ${t.cost}</span>` : ""}
+            ${t.limit ? `<span class="codexTag">Limite: ${t.limit}</span>` : ""}
+            ${t.opposite ? `<span class="codexTag">Oposto: ${traitById(t.opposite)?.name || t.opposite}</span>` : ""}
+            ${t.ability ? `<span class="codexTag">Habilidade automática</span>` : ""}
+          `;
+
+          const body = document.createElement("div");
+          body.style.fontSize = "12px";
+          body.style.color = "var(--muted)";
+          body.style.lineHeight = "1.4";
+          body.innerHTML = t.effects?.length
+            ? t.effects.map(e => `• ${e}`).join("<br/>")
+            : "• Sem efeitos listados";
+
+          card.append(header, tags, body);
+          grid.appendChild(card);
+        });
+
+        codexTraits.append(title, grid);
+      });
+      updateTraitsUI();
+    }
+
+    function updateTraitsUI(){
+      const positives = Array.from(selectedTraits).map(traitById).filter(t => t && traitIsPositive(t));
+      const negatives = Array.from(selectedTraits).map(traitById).filter(t => t && !traitIsPositive(t));
+      traitsPosCount.value = positives.length;
+      traitsNegCount.value = negatives.length;
+      if (positives.length === negatives.length){
+        traitsBalanceStatus.value = "Balanceado";
+      } else if (positives.length > negatives.length){
+        traitsBalanceStatus.value = `Faltam ${positives.length - negatives.length} traço(s) negativo(s)`;
+      } else {
+        traitsBalanceStatus.value = `Faltam ${negatives.length - positives.length} traço(s) positivo(s)`;
+      }
+      if (codexTraits){
+        codexTraits.querySelectorAll("input[data-trait-id]").forEach(input => {
+          const trait = traitById(input.dataset.traitId);
+          input.checked = selectedTraits.has(input.dataset.traitId);
+          input.disabled = Boolean(trait?.opposite && selectedTraits.has(trait.opposite));
+        });
+      }
+    }
+
+    function syncTraitAbilities(){
+      const rows = Array.from(movesBody.querySelectorAll(".tRow[data-trait-id]"));
+      rows.forEach(row => {
+        if (!selectedTraits.has(row.dataset.traitId)) row.remove();
+      });
+      selectedTraits.forEach(id => {
+        const trait = traitById(id);
+        if (!trait?.ability) return;
+        if (!movesBody.querySelector(`.tRow[data-trait-id="${id}"]`)){
+          movesBody.appendChild(makeMoveRow({ ...trait.ability, traitId: id, locked: true }));
+        }
+      });
+    }
+
+    function getTraitDiceBonus(statusKey, skillName){
+      let bonus = 0;
+      selectedTraits.forEach(id => {
+        const trait = traitById(id);
+        if (!trait?.dice) return;
+        if (statusKey && trait.dice.status?.[statusKey]) bonus += trait.dice.status[statusKey];
+        if (skillName && trait.dice.skill?.[skillName]) bonus += trait.dice.skill[skillName];
+      });
+      return clamp(bonus, -2, 2);
+    }
+
+    codexTraits?.addEventListener("change", (e) => {
+      const input = e.target;
+      if (!(input instanceof HTMLInputElement)) return;
+      const traitId = input.dataset.traitId;
+      if (!traitId) return;
+      const trait = traitById(traitId);
+      if (!trait) return;
+
+      if (input.checked){
+        if (trait.opposite && selectedTraits.has(trait.opposite)){
+          input.checked = false;
+          showToast("Traços opostos não podem ser escolhidos juntos.");
+          return;
+        }
+        selectedTraits.add(traitId);
+      } else {
+        selectedTraits.delete(traitId);
+      }
+      updateTraitsUI();
+      syncTraitAbilities();
+      autoSaveDebounced();
+    });
+
     // ===== Selection state =====
     let selectedStatusKey = null;
     let selectedSkillName = null;
@@ -1135,6 +1740,24 @@
     const summaryHp = el("summaryHp");
     const summaryPd = el("summaryPd");
     const summaryXp = el("summaryXp");
+    const summaryInitiative = el("summaryInitiative");
+    const summaryDefense = el("summaryDefense");
+    const summaryArmor = el("summaryArmor");
+    const summaryResistance = el("summaryResistance");
+    const summarySpeed = el("summarySpeed");
+    const summaryConditions = el("summaryConditions");
+    const summaryConditionsList = el("summaryConditionsList");
+
+    const CONDITION_IDS = [
+      "cond_injured",
+      "cond_exhausted",
+      "cond_stunned",
+      "cond_frightened",
+      "cond_poisoned",
+      "cond_burning",
+      "cond_frozen",
+      "cond_bleeding"
+    ];
 
     function updateSummary(){
       if (!summaryName) return;
@@ -1147,6 +1770,21 @@
       summaryHp.textContent = hpNow;
       summaryPd.textContent = pdNow;
       summaryXp.textContent = el("xp").value || "—";
+      if (summaryInitiative){
+        summaryInitiative.textContent = el("combat_initiative").value || "—";
+        summaryDefense.textContent = el("combat_defense").value || "—";
+        summaryArmor.textContent = el("combat_armor").value || "—";
+        summaryResistance.textContent = el("combat_resistance").value || "—";
+        summarySpeed.textContent = el("combat_speed").value || "—";
+        const activeConditions = CONDITION_IDS.filter(id => el(id)?.checked);
+        summaryConditions.textContent = activeConditions.length ? String(activeConditions.length) : "—";
+        summaryConditionsList.textContent = activeConditions.length
+          ? activeConditions
+              .map(id => el(id)?.closest("label")?.querySelector("span")?.textContent?.trim())
+              .filter(Boolean)
+              .join(", ")
+          : "Nenhuma";
+      }
     }
 
     function statusNameFromKey(k){
@@ -1326,9 +1964,10 @@
       const stName = statusNameFromKey(selectedStatusKey);
       const bonus = Number(el("test_bonus").value)||0;
       const extra = Number(el("test_extra").value)||0;
+      const traitDice = getTraitDiceBonus(selectedStatusKey, selectedSkillName);
 
       const baseN = Math.max(1, getStatusTotal(selectedStatusKey));
-      const n = Math.max(1, baseN + bonus);
+      const n = Math.max(1, baseN + bonus + traitDice);
 
       const r = rollPoolKeepHighest(n);
       const best = r.best;
@@ -1344,9 +1983,9 @@
       const total = base + extra;
 
       renderResult(
-        `${label} • ${n}d20 (maior) ${selectedSkillName ? `+ ${skTotal}` : ""} ${formatSigned(extra)}`,
+        `${label} • ${n}d20 (maior) ${selectedSkillName ? `+ ${skTotal}` : ""} ${traitDice ? `| Traços ${formatSigned(traitDice)}d20` : ""} ${formatSigned(extra)}`,
         total,
-        `Pool: [${r.rolls.join(", ")}] → maior ${best}${selectedSkillName ? ` | +Perícia ${skTotal}` : ""} | Extra ${formatSigned(extra)}`,
+        `Pool: [${r.rolls.join(", ")}] → maior ${best}${selectedSkillName ? ` | +Perícia ${skTotal}` : ""}${traitDice ? ` | +Traços ${formatSigned(traitDice)}d20` : ""} | Extra ${formatSigned(extra)}`,
         `[${r.rolls.join(", ")}] (maior ${best})`,
         base,
         formatSigned(extra)
@@ -1423,6 +2062,7 @@
       const row = document.createElement("div");
       row.className = "tRow";
       row.style.gridTemplateColumns = "1.05fr .55fr .45fr .55fr 1.8fr";
+      if (data.traitId) row.dataset.traitId = data.traitId;
 
       const mkIn = (ph="")=>{
         const i = document.createElement("input");
@@ -1453,6 +2093,14 @@
       fold.appendChild(sum);
       fold.appendChild(inside);
 
+      if (data.locked){
+        [name, dmg, cost, rng, ta].forEach(input => {
+          input.readOnly = true;
+          input.classList.add("readonly");
+        });
+        sum.innerHTML = `<span>Descrição</span><span class="pill">Traço</span>`;
+      }
+
       row.append(name, dmg, cost, rng, fold);
       return row;
     }
@@ -1460,8 +2108,9 @@
     function addMove(data){ movesBody.appendChild(makeMoveRow(data)); autoSaveDebounced(); }
     el("addMove").addEventListener("click", () => addMove({}));
     el("clearMoves").addEventListener("click", () => {
-      movesBody.innerHTML = "";
+      movesBody.querySelectorAll(".tRow:not([data-trait-id])").forEach(row => row.remove());
       showToast("Habilidades limpas!");
+      syncTraitAbilities();
       autoSaveDebounced();
     });
 
@@ -1749,7 +2398,8 @@
           dmg:  inputs[1]?.value || "",
           cost: inputs[2]?.value || "",
           rng:  inputs[3]?.value || "",
-          desc: ta?.value || ""
+          desc: ta?.value || "",
+          traitId: r.dataset.traitId || ""
         };
       });
     }
@@ -1779,6 +2429,13 @@
         pd_now: el("pd_now").value,
         xp: el("xp").value,
         public_opinion: el("public_opinion").value,
+        combat_initiative: el("combat_initiative").value,
+        combat_defense: el("combat_defense").value,
+        combat_armor: el("combat_armor").value,
+        combat_resistance: el("combat_resistance").value,
+        combat_speed: el("combat_speed").value,
+        conditions: Object.fromEntries(CONDITION_IDS.map(id => [id, Boolean(el(id)?.checked)])),
+        traits: Array.from(selectedTraits),
 
         story_summary: el("story_summary").value,
         story_full: el("story_full").value,
@@ -1826,6 +2483,25 @@
       el("pd_now").value = obj.pd_now ?? 11;
       el("xp").value = obj.xp ?? "XP 0/100";
       el("public_opinion").value = obj.public_opinion ?? 0;
+      el("combat_initiative").value = obj.combat_initiative ?? "";
+      el("combat_defense").value = obj.combat_defense ?? "";
+      el("combat_armor").value = obj.combat_armor ?? "";
+      el("combat_resistance").value = obj.combat_resistance ?? "";
+      el("combat_speed").value = obj.combat_speed ?? "";
+      selectedTraits.clear();
+      (obj.traits || []).forEach(t => selectedTraits.add(t));
+      renderCodex();
+      if (obj.conditions){
+        CONDITION_IDS.forEach(id => {
+          const input = el(id);
+          if (input) input.checked = Boolean(obj.conditions[id]);
+        });
+      } else {
+        CONDITION_IDS.forEach(id => {
+          const input = el(id);
+          if (input) input.checked = false;
+        });
+      }
 
       el("story_summary").value = obj.story_summary ?? "";
       el("story_full").value = obj.story_full ?? "";
@@ -1879,7 +2555,10 @@
 
       // moves
       movesBody.innerHTML = "";
-      (obj.moves || []).forEach(m => movesBody.appendChild(makeMoveRow(m)));
+      (obj.moves || []).forEach(m => {
+        const trait = m.traitId ? traitById(m.traitId) : null;
+        movesBody.appendChild(makeMoveRow({ ...m, locked: Boolean(trait?.ability) }));
+      });
       if (!(obj.moves||[]).length) { for (let i=0;i<4;i++) addMove({}); }
 
       // items
@@ -1887,6 +2566,7 @@
       (obj.items || []).forEach(it => invList.appendChild(makeInvItem(it)));
       if (!(obj.items||[]).length) { addItem({name:"", qty:1, desc:"", photo:""}); }
 
+      syncTraitAbilities();
       recalcAll();
       updateSummary();
       updateSelectionUI();
@@ -2162,6 +2842,7 @@
 
     // ===== Init =====
     restoreSectionOrder();
+    renderCodex();
     initTables();
 
     // default moves/items se vazio
