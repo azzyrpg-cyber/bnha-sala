@@ -394,6 +394,31 @@
       border-color: rgba(255,255,255,.28);
       color: var(--txt);
     }
+    .resourceFloat{
+      position:fixed;
+      right:26px;
+      bottom:26px;
+      width:280px;
+      z-index:998;
+      cursor:default;
+      user-select:none;
+    }
+    .resourceFloat.dragging{
+      cursor:grabbing;
+    }
+    .resourceFloat .resCard{
+      box-shadow: var(--shadow);
+    }
+    .resourceFloatHeader{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      margin-bottom:8px;
+    }
+    .resourceFloatHeader .miniBtn{
+      padding:6px 8px;
+    }
     .subRow{
       display:grid;
       grid-template-columns: auto 1fr;
@@ -815,23 +840,7 @@
                 </div>
 
                 <div class="resourceBar">
-                  <div class="resCard hp">
-                    <div class="resTop"><div class="name">❤ HP</div><div class="pill">CON×20</div></div>
-                    <div class="numRow">
-                      <input id="hp_now" type="number" value="20" min="0"/>
-                      <span class="numSep">/</span>
-                      <input id="hp_max" type="number" value="20" min="1"/>
-                    </div>
-                    <div class="resMeter"><div class="resFill" id="hp_fill"></div></div>
-                  </div>
-                  <div class="resCard pd">
-                    <div class="resTop"><div class="name">⚡ PD</div><div class="pill">QUIRK×10 + INT/2</div></div>
-                    <div class="numRow">
-                      <input id="pd_now" type="number" value="11" min="0"/>
-                      <span class="numSep">/</span>
-                      <input id="pd_max" type="number" value="11" min="1"/>
-                    </div>
-                    <div class="resMeter"><div class="resFill" id="pd_fill"></div></div>
+                  <div class="resCard pd" style="grid-column: 1 / -1;">
                     <div class="subRow">
                       <span class="subLabel">⭐ XP</span>
                       <input id="xp" value="XP 0/100"/>
@@ -1361,6 +1370,31 @@
         </div>
       </aside>
     </main>
+  </div>
+
+  <div class="resourceFloat panel" id="resourceFloat" style="display:none;">
+    <div class="resourceFloatHeader">
+      <div class="chip">🎯 Recursos</div>
+      <button class="miniBtn" id="resourceLock">🔒 Fixar</button>
+    </div>
+    <div class="resCard hp">
+      <div class="resTop"><div class="name">❤ HP</div><div class="pill">CON×20</div></div>
+      <div class="numRow">
+        <input id="hp_now" type="number" value="20" min="0"/>
+        <span class="numSep">/</span>
+        <input id="hp_max" type="number" value="20" min="1"/>
+      </div>
+      <div class="resMeter"><div class="resFill" id="hp_fill"></div></div>
+    </div>
+    <div class="resCard pd" style="margin-top:10px;">
+      <div class="resTop"><div class="name">⚡ PD</div><div class="pill">QUIRK×10 + INT/2</div></div>
+      <div class="numRow">
+        <input id="pd_now" type="number" value="11" min="0"/>
+        <span class="numSep">/</span>
+        <input id="pd_max" type="number" value="11" min="1"/>
+      </div>
+      <div class="resMeter"><div class="resFill" id="pd_fill"></div></div>
+    </div>
   </div>
 
   <div class="toast" id="toast">Feito!</div>
@@ -3061,6 +3095,68 @@
       autoSaveDebounced();
     });
 
+    // ===== Recursos flutuantes =====
+    const resourceFloat = el("resourceFloat");
+    const resourceLock = el("resourceLock");
+    const RESOURCE_POS_KEY = "bnha_resource_pos_v1";
+    let resourceLocked = true;
+
+    function setResourcePosition(x, y){
+      if (!resourceFloat) return;
+      resourceFloat.style.left = `${x}px`;
+      resourceFloat.style.top = `${y}px`;
+      resourceFloat.style.right = "auto";
+      resourceFloat.style.bottom = "auto";
+    }
+    function loadResourcePosition(){
+      if (!resourceFloat) return;
+      try{
+        const raw = localStorage.getItem(RESOURCE_POS_KEY);
+        if (!raw) return;
+        const {x, y} = JSON.parse(raw);
+        if (Number.isFinite(x) && Number.isFinite(y)) setResourcePosition(x, y);
+      }catch{}
+    }
+    function saveResourcePosition(){
+      if (!resourceFloat) return;
+      const rect = resourceFloat.getBoundingClientRect();
+      localStorage.setItem(RESOURCE_POS_KEY, JSON.stringify({x: rect.left, y: rect.top}));
+    }
+    function setResourceLockState(locked){
+      resourceLocked = locked;
+      if (resourceLock) resourceLock.textContent = locked ? "🔒 Fixar" : "🟢 Mover";
+      if (resourceFloat) resourceFloat.classList.toggle("dragging", !locked);
+    }
+
+    resourceLock?.addEventListener("click", (e) => {
+      e.preventDefault();
+      setResourceLockState(!resourceLocked);
+    });
+
+    resourceFloat?.addEventListener("mousedown", (e) => {
+      if (resourceLocked) return;
+      if (e.target instanceof HTMLInputElement || e.target.closest("button")) return;
+      e.preventDefault();
+      const startX = e.clientX;
+      const startY = e.clientY;
+      const rect = resourceFloat.getBoundingClientRect();
+      const originX = rect.left;
+      const originY = rect.top;
+
+      const onMove = (evt) => {
+        const dx = evt.clientX - startX;
+        const dy = evt.clientY - startY;
+        setResourcePosition(originX + dx, originY + dy);
+      };
+      const onUp = () => {
+        saveResourcePosition();
+        window.removeEventListener("mousemove", onMove);
+        window.removeEventListener("mouseup", onUp);
+      };
+      window.addEventListener("mousemove", onMove);
+      window.addEventListener("mouseup", onUp);
+    });
+
     
     // =======================
     // Multiplayer (Sala)
@@ -3108,6 +3204,7 @@
       NET.targetId = ""; NET.targetType = "player";
       lobbyPanel.style.display = "none";
       appRoot.style.display = "grid";
+      if (resourceFloat) resourceFloat.style.display = "block";
       roomStatusChip.textContent = `🏠 Sala: ${roomId} • ${role.toUpperCase()}`;
       if (roomChip) roomChip.textContent = `Sala: ${roomId}`;
       if (role === "master"){
@@ -3310,6 +3407,12 @@
     restoreSectionOrder();
     renderCodex();
     initTables();
+    if (resourceFloat){
+      resourceFloat.style.display = "none";
+      loadResourcePosition();
+      setResourceLockState(true);
+      updateResourceBars();
+    }
 
     // default moves/items se vazio
     for (let i=0;i<4;i++) addMove({});
