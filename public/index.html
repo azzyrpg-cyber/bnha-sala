@@ -16,6 +16,7 @@
       --accent:#7a5cff; --accent2:#29d3ff;
       --sel: rgba(122,92,255,.25);
       --selLine: rgba(122,92,255,.65);
+      --heroBg:url("https://lh3.googleusercontent.com/rd-gg-dl/ABS2GSkPMqjMKhZipu4dR7pVmLZmXix7idYKe_F_LT572XjB5jZmhLeQzSLioxPl0Ljt_HXCDAklncohk10ZlnGkdPqGS_WS-Yw5JBUA0MYbXuxpHvfQVtDdwdrWYjhYvz42G7Ue1vemXs7-4YaK8qdNbjf4cF-4WixZ3oP2zaG4FGm_KvGazkz7b_JnM4mwkiADaqcWBALt_DU1rP9vS3g5ubTEK28ReG8c0K8ervUNrWUGkArHgM63jaLqTarEImXQQOWW2rysybiaGjVsqt0tSGAYjrcDTtMdU9lVHRnjA87W4WS7S2iRb8g2V6GUnz-JsO2VXXfjgkuBNpxDIMjbCQWusW2vNxfQ5LrFsQY-Nxs0_0is5fJ-9rSKBXCQlIBX0s4ViJfX-3hN6HGQ_aywUatuR9s4c3awZahaVAoxMbm2kPGji8iq03aGqCWFMxK3dPaXhohrY4BCxNcHhijLLHojeNcUU1J3qkDkMdPia1ylpxaxcCpFdp2EZ5rMcjcUab7PJbwB4WuYATHlW8OSsqjGsRQI2fafKdaS0DqyrAfjWUdpn26Oyq_B4jfAuyR3_sMkoU3fzXt6zQ2hkJBU0f6Us3owe8ZkYmIaFX17EhyWyQ5aizYqDm_bohVvqH5z1t0TTSfstKGO2viIPjSWQCfRM8awYDYrUdaYKvlEbVHIZqMoabNSQlePlg26bZZlYWYHYjzPhWkR-W0GwiSHyO4j7AUgyc0HPmFgE_LEGWyjEgCLxSkqbL9SWn8OHVhixuKpXBSYIpQ_mIfy0S1BqSxZ9RBj1rwku3BQoUCURhZXEo80nIgl50dYlSdAkgGOkgmDYTNuX4WuAoqCx369jrhopJs80vZR4TC-x-JrEcStH8fbLcf8LuGYaIZpdwr1SJdJ_04gBJ4cqgNwVK6wt4Tr-xGCN_vjTn_j_Hm37dxtLoojQc5JM2CF1jkNS34yJTfs8HhbKzp4CTPlusrdesNlJgyyqwKqqXCRGKEgEgDlWa6c-8oqMQaqBHHP0J8HIvFz1pcj23dnYaBR-ocdRRF9_4pnXNGCrgcii3xq9TAxtlLjqVGECpM3aerFSmd7rkQfxNGFhzJF50x5NH6dgSPUX7mH0yat9b7zM-tBGuewm-Mvkgm2SYffoFGT0y7MnXpW10Gk3wXU8iZeaxXG-zpZxSGfK0NQtrw5IxBzW9rBlbt9J0tJzQW3BZh68V7jBWnn_zYT8IIpmk904Dtnl5OkEQ5e=s1024-rj");
     }
     *{box-sizing:border-box}
     body{
@@ -23,11 +24,21 @@
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
       min-height:100vh;
       background:
+        linear-gradient(180deg, rgba(6,10,20,.85), rgba(9,13,26,.92)),
         radial-gradient(1200px 700px at 15% 10%, rgba(43,107,255,.35), transparent 60%),
         radial-gradient(900px 600px at 85% 20%, rgba(32,227,162,.25), transparent 60%),
         radial-gradient(900px 600px at 60% 95%, rgba(255,210,74,.18), transparent 55%),
-        linear-gradient(180deg, var(--bg1), var(--bg2));
+        var(--heroBg);
+      background-size: cover;
+      background-attachment: fixed;
       padding:22px; display:flex; justify-content:center;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      background: linear-gradient(135deg, rgba(12,18,35,.65), rgba(8,10,22,.85));
+      z-index:-1;
     }
     .wrap{width:min(1220px, 100%); display:grid; gap:16px;}
 
@@ -76,7 +87,7 @@
     .panel{
       border:1px solid var(--line);
       border-radius: var(--radius);
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(0,0,0,.22));
       box-shadow: var(--shadow);
       overflow:hidden;
     }
@@ -131,6 +142,17 @@
       color:var(--txt);
       letter-spacing:.3px;
     }
+    .statPill small{
+      font-size:11px;
+      color:var(--muted);
+      font-weight:900;
+      letter-spacing:.2px;
+    }
+    #roomRollFeed{
+      max-height: 320px;
+      overflow:auto;
+      padding-right:4px;
+    }
     .head{
       padding:14px 16px 10px;
       display:flex; align-items:center; justify-content:space-between; gap:12px;
@@ -178,6 +200,159 @@
       color: var(--txt);
     }
     .field textarea{min-height:92px; resize:vertical}
+    .conditionGrid{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:10px;
+    }
+    .conditionTag{
+      position:relative;
+      cursor:pointer;
+    }
+    .conditionTag input{
+      position:absolute;
+      opacity:0;
+      pointer-events:none;
+    }
+    .conditionTag span{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.22);
+      padding:8px 12px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:1100;
+      color:var(--muted);
+      transition: border-color .2s ease, background .2s ease, color .2s ease;
+    }
+    .conditionTag input:checked + span{
+      border-color: var(--selLine);
+      background: var(--sel);
+      color: var(--txt);
+      box-shadow: 0 8px 16px rgba(122,92,255,.2);
+    }
+    .codexList{
+      display:grid;
+      gap:14px;
+      margin-top:10px;
+    }
+    .codexCategory{
+      border:1px solid rgba(255,255,255,.1);
+      border-radius:16px;
+      background: rgba(0,0,0,.22);
+      overflow:hidden;
+    }
+    .codexCategory details{
+      border:none;
+    }
+    .codexCategory summary{
+      list-style:none;
+      cursor:pointer;
+    }
+    .codexCategory summary::-webkit-details-marker{display:none}
+    .codexCategoryTitle{
+      padding:10px 12px;
+      font-weight:1200;
+      font-size:12px;
+      letter-spacing:.3px;
+      background: rgba(0,0,0,.35);
+      border-bottom:1px solid rgba(255,255,255,.08);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+    }
+    .codexCategoryTitle span{
+      color:var(--muted);
+      font-size:11px;
+      font-weight:900;
+      text-transform:uppercase;
+    }
+    .codexGrid{
+      display:grid;
+      gap:10px;
+      padding:10px;
+    }
+    .codexCard{
+      border:1px solid rgba(255,255,255,.12);
+      border-left:4px solid rgba(122,92,255,.7);
+      border-radius:10px;
+      padding:10px 12px;
+      background: linear-gradient(180deg, rgba(10,16,28,.9), rgba(0,0,0,.35));
+      display:grid;
+      gap:6px;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.2);
+    }
+    .codexCard.negative{
+      border-left-color: rgba(255,93,136,.75);
+    }
+    .codexHeader{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .codexHeader h4{
+      margin:0;
+      font-size:13px;
+      letter-spacing:.2px;
+    }
+    .codexTags{
+      display:flex;
+      gap:6px;
+      flex-wrap:wrap;
+      font-size:11px;
+      color:var(--muted);
+    }
+    .codexTag{
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.25);
+      padding:3px 8px;
+      border-radius:6px;
+      text-transform:uppercase;
+      letter-spacing:.3px;
+    }
+    .codexSelect{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-size:12px;
+      font-weight:1100;
+    }
+    .codexSelect input{
+      appearance:none;
+      width:16px;
+      height:16px;
+      border:1px solid rgba(255,255,255,.35);
+      border-radius:3px;
+      background: rgba(0,0,0,.6);
+      display:grid;
+      place-items:center;
+      cursor:pointer;
+    }
+    .codexSelect input:checked{
+      background: linear-gradient(180deg, rgba(41,211,255,.85), rgba(122,92,255,.85));
+      border-color: rgba(41,211,255,.9);
+      box-shadow: 0 0 0 2px rgba(41,211,255,.2);
+    }
+    .codexSelect input:checked::after{
+      content:"✓";
+      font-size:12px;
+      color:#061018;
+      font-weight:1200;
+    }
+    .codexRule{
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:12px;
+      padding:10px 12px;
+      background: rgba(0,0,0,.18);
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.4;
+    }
 
     .resourceBar{display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:10px; margin-top:10px;}
     .resCard{
@@ -218,6 +393,13 @@
       flex: 1 1 0;
       min-width: 0;
     }
+    .resourceFloat .numRow input{
+      min-width:70px;
+    }
+    .numSep{
+      font-weight:1200;
+      color:var(--muted);
+    }
     .resCard.hp .pill{border-color: rgba(255,61,109,.45); color: #ffd2dc;}
     .resCard.pd .pill{border-color: rgba(32,227,162,.45); color: #caffea;}
     .resCard.pd .numRow input,
@@ -225,6 +407,101 @@
       background: rgba(4,10,20,.85);
       border-color: rgba(255,255,255,.28);
       color: var(--txt);
+    }
+    .resourceFloat{
+      position:fixed;
+      right:26px;
+      bottom:26px;
+      width:340px;
+      z-index:998;
+      cursor:default;
+      user-select:none;
+    }
+    .resourceFloat.dragging{
+      cursor:grabbing;
+    }
+    .resourceFloat .resCard{
+      box-shadow: var(--shadow);
+    }
+    .resourceFloatHeader{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      margin-bottom:8px;
+    }
+    .resourceFloatHeader .miniBtn{
+      padding:6px 8px;
+    }
+    .resourceTable{
+      display:grid;
+      gap:0;
+      border:2px solid rgba(0,0,0,.8);
+      border-radius:8px;
+      overflow:hidden;
+      background: rgba(0,0,0,.45);
+    }
+    .resourceRow{
+      display:grid;
+      grid-template-columns: 64px 1fr 1fr 1fr;
+    }
+    .resourceCell{
+      border-right:2px solid rgba(0,0,0,.7);
+      border-bottom:2px solid rgba(0,0,0,.7);
+      padding:8px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:1200;
+      background: rgba(255,255,255,.04);
+    }
+    .resourceRow:last-child .resourceCell{
+      border-bottom:none;
+    }
+    .resourceCell:last-child{
+      border-right:none;
+    }
+    .resourceHead{
+      background: #121212;
+      color: #fff;
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.4px;
+    }
+    .resourceIcon{
+      font-size:18px;
+      justify-content:center;
+      color:#fff;
+    }
+    .resourceIcon.hp{background:#c41c1c;}
+    .resourceIcon.pd{background:#3b74d6;}
+    .resourceCell input{
+      width:100%;
+      border:1px solid rgba(255,255,255,.2);
+      border-radius:6px;
+      padding:6px 8px;
+      text-align:center;
+      background: rgba(6,12,24,.8);
+      color: var(--txt);
+      font-weight:1200;
+    }
+    .resourceFooter{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:8px;
+      background: rgba(0,0,0,.25);
+      border-top:2px solid rgba(0,0,0,.7);
+    }
+    .resourceFooter input{
+      flex:1;
+      border:1px solid rgba(255,255,255,.2);
+      border-radius:6px;
+      padding:6px 8px;
+      background: rgba(6,12,24,.8);
+      color: var(--txt);
+      font-weight:1200;
+      text-align:center;
     }
     .subRow{
       display:grid;
@@ -284,10 +561,16 @@
       user-select:none;
       padding:12px 12px;
       display:flex; align-items:center; justify-content:space-between; gap:10px;
-      background: rgba(0,0,0,.16);
+      background: linear-gradient(90deg, rgba(12,18,35,.85), rgba(6,10,20,.6));
       font-weight:1200;
     }
     details.fold > summary::-webkit-details-marker{display:none}
+    details.fold > summary:hover{
+      background: linear-gradient(90deg, rgba(32,56,110,.45), rgba(6,10,20,.65));
+    }
+    details.fold[open] > summary{
+      background: linear-gradient(90deg, rgba(43,107,255,.35), rgba(6,10,20,.7));
+    }
     details.fold .inside{padding:12px 12px 14px}
 
     .sumLeft{display:flex; align-items:center; gap:10px;}
@@ -646,24 +929,104 @@
                   </div>
                 </div>
 
-                <div class="resourceBar">
-                  <div class="resCard hp">
-                    <div class="resTop"><div class="name">❤ HP</div><div class="pill">CON×20</div></div>
-                    <div class="numRow">
-                      <input id="hp_now" type="number" value="20" min="0"/>
-                    </div>
+                <div class="resourceBar"></div>
+              </div>
+            </details>
+
+            <!-- Combate & Defesas -->
+            <details class="fold" data-sec="combate_defesas" open>
+              <summary>
+                <div class="sumLeft">
+                  <span>⚔️ Combate & Defesas</span>
+                  <span class="help" data-tip="Ajustes rápidos de combate e condições do personagem.">?</span>
+                </div>
+                <div class="sumRight">
+                  <span class="dragHint">reordenar</span>
+                  <button class="miniBtn secUp" type="button" title="Subir">↑</button>
+                  <button class="miniBtn secDown" type="button" title="Descer">↓</button>
+                  <span style="color:var(--muted); font-weight:900;">abrir ▾</span>
+                </div>
+              </summary>
+              <div class="inside">
+                <div class="row" style="margin-top:0">
+                  <div class="field">
+                    <label>Iniciativa <span class="help" data-tip="Bônus de iniciativa ou valor fixo.">?</span></label>
+                    <input id="combat_initiative" placeholder="+0"/>
                   </div>
-                  <div class="resCard pd">
-                    <div class="resTop"><div class="name">⚡ PD</div><div class="pill">QUIRK×10 + INT/2</div></div>
-                    <div class="numRow">
-                      <input id="pd_now" type="number" value="11" min="0"/>
-                    </div>
-                    <div class="subRow">
-                      <span class="subLabel">⭐ XP</span>
-                      <input id="xp" value="XP 0/100"/>
+                  <div class="field">
+                    <label>Defesa <span class="help" data-tip="Defesa base ou CA do personagem.">?</span></label>
+                    <input id="combat_defense" placeholder="10"/>
+                  </div>
+                  <div class="field">
+                    <label>Armadura <span class="help" data-tip="Redução de dano ou armadura equipada.">?</span></label>
+                    <input id="combat_armor" placeholder="Leve / 2"/>
+                  </div>
+                  <div class="field">
+                    <label>Resistência <span class="help" data-tip="Resistência física ou mágica.">?</span></label>
+                    <input id="combat_resistance" placeholder="Físico +2"/>
+                  </div>
+                  <div class="field">
+                    <label>Deslocamento <span class="help" data-tip="Velocidade por turno.">?</span></label>
+                    <input id="combat_speed" placeholder="9m"/>
+                  </div>
+                  <div class="field w12">
+                    <label>Condições ativas <span class="help" data-tip="Marque as condições atuais para lembrar no combate.">?</span></label>
+                    <div class="conditionGrid">
+                      <label class="conditionTag"><input id="cond_injured" type="checkbox"/><span>Ferido</span></label>
+                      <label class="conditionTag"><input id="cond_exhausted" type="checkbox"/><span>Exausto</span></label>
+                      <label class="conditionTag"><input id="cond_stunned" type="checkbox"/><span>Atordoado</span></label>
+                      <label class="conditionTag"><input id="cond_frightened" type="checkbox"/><span>Amedrontado</span></label>
+                      <label class="conditionTag"><input id="cond_poisoned" type="checkbox"/><span>Envenenado</span></label>
+                      <label class="conditionTag"><input id="cond_burning" type="checkbox"/><span>Queimando</span></label>
+                      <label class="conditionTag"><input id="cond_frozen" type="checkbox"/><span>Congelado</span></label>
+                      <label class="conditionTag"><input id="cond_bleeding" type="checkbox"/><span>Sangrando</span></label>
                     </div>
                   </div>
                 </div>
+              </div>
+            </details>
+
+            <!-- Codex Traços & Passivas -->
+            <details class="fold" data-sec="codex_tracos" open>
+              <summary>
+                <div class="sumLeft">
+                  <span>📘 Codex — Traços & Passivas</span>
+                  <span class="help" data-tip="Selecione traços positivos/negativos para liberar bônus e habilidades automáticas.">?</span>
+                </div>
+                <div class="sumRight">
+                  <span class="dragHint">reordenar</span>
+                  <button class="miniBtn secUp" type="button" title="Subir">↑</button>
+                  <button class="miniBtn secDown" type="button" title="Descer">↓</button>
+                  <span style="color:var(--muted); font-weight:900;">abrir ▾</span>
+                </div>
+              </summary>
+              <div class="inside">
+                <div class="codexRule">
+                  <b>🔒 Regras gerais (fixo)</b><br/>
+                  • Para cada 1 Traço Positivo, escolha 1 Traço Negativo.<br/>
+                  • Traços Passivos ficam sempre ativos. Traços Ativáveis consomem PV.<br/>
+                  • Traços Opostos não podem ser escolhidos juntos.<br/>
+                  • Bônus máximos vindos de Traços: +2 dados por tipo de rolagem.<br/>
+                  • Traços que concedem habilidades aparecem automaticamente na aba <b>Habilidades</b>.<br/>
+                  • Se interpretar bem um Traço Negativo: +2 PV ou +1 dado bônus (1x por cena).
+                </div>
+
+                <div class="row" style="margin-top:10px;">
+                  <div class="field w6">
+                    <label>Traços positivos selecionados</label>
+                    <input id="traitsPosCount" class="readonly" readonly value="0"/>
+                  </div>
+                  <div class="field w6">
+                    <label>Traços negativos selecionados</label>
+                    <input id="traitsNegCount" class="readonly" readonly value="0"/>
+                  </div>
+                  <div class="field w12">
+                    <label>Status do balanceamento</label>
+                    <input id="traitsBalanceStatus" class="readonly" readonly value="Selecione traços para balancear"/>
+                  </div>
+                </div>
+
+                <div class="codexList" id="codexTraits"></div>
               </div>
             </details>
 
@@ -965,6 +1328,21 @@
                     <div class="statPill"><span>XP</span><strong id="summaryXp">—</strong></div>
                   </div>
                 </div>
+                <div class="summaryCard">
+                  <div class="summaryTitle">⚔️ Combate rápido</div>
+                  <div class="summaryStatRow">
+                    <div class="statPill"><span>Iniciativa</span><strong id="summaryInitiative">—</strong></div>
+                    <div class="statPill"><span>Defesa</span><strong id="summaryDefense">—</strong></div>
+                    <div class="statPill"><span>Armadura</span><strong id="summaryArmor">—</strong></div>
+                    <div class="statPill"><span>Resistência</span><strong id="summaryResistance">—</strong></div>
+                    <div class="statPill"><span>Deslocamento</span><strong id="summarySpeed">—</strong></div>
+                    <div class="statPill">
+                      <span>Condições</span>
+                      <strong id="summaryConditions">—</strong>
+                      <small id="summaryConditionsList">—</small>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </details>
@@ -1077,6 +1455,39 @@
     </main>
   </div>
 
+  <div class="resourceFloat panel" id="resourceFloat" style="display:none;">
+    <div class="resourceFloatHeader">
+      <div class="chip">🎯 Recursos</div>
+      <div style="display:flex; gap:6px;">
+        <button class="miniBtn" id="resourceLock">🔒 Fixar</button>
+      </div>
+    </div>
+    <div class="resourceTable">
+      <div class="resourceRow">
+        <div class="resourceCell resourceHead"> </div>
+        <div class="resourceCell resourceHead">Atual</div>
+        <div class="resourceCell resourceHead">Max</div>
+        <div class="resourceCell resourceHead">Level</div>
+      </div>
+      <div class="resourceRow">
+        <div class="resourceCell resourceIcon hp">❤</div>
+        <div class="resourceCell"><input id="hp_now" type="number" value="20" min="0"/></div>
+        <div class="resourceCell"><input id="hp_max" type="number" value="20" min="1"/></div>
+        <div class="resourceCell"><input id="level" type="number" value="0" min="0"/></div>
+      </div>
+      <div class="resourceRow">
+        <div class="resourceCell resourceIcon pd">⚡</div>
+        <div class="resourceCell"><input id="pd_now" type="number" value="11" min="0"/></div>
+        <div class="resourceCell"><input id="pd_max" type="number" value="11" min="1"/></div>
+        <div class="resourceCell"><input id="xp" value="XP 0/100"/></div>
+      </div>
+      <div class="resourceFooter">
+        <span>💰</span>
+        <input id="money" value="R$100"/>
+      </div>
+    </div>
+  </div>
+
   <div class="toast" id="toast">Feito!</div>
 
   <script>
@@ -1103,6 +1514,609 @@
       "Diplomacia","Enganação","Furtividade","Intimidação","Investigação","Intuição",
       "Luta","Medicina","Pilotagem","Pontaria","Sobrevivência","Tecnologia"
     ];
+    const TRAITS = [
+      {
+        id: "potencia_muscular",
+        name: "Potência Muscular",
+        category: "Combate Físico",
+        kind: "positivo",
+        type: "Passiva",
+        opposite: "musculatura_fragil",
+        effects: ["+1 dado em testes de Força", "+1 dado em dano corpo a corpo"],
+        dice: { status: { for: 1 } }
+      },
+      {
+        id: "golpe_demolidor",
+        name: "Golpe Demolidor",
+        category: "Combate Físico",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["Crítico: -2 DT Defesa Física do alvo até o fim do combate (acumula até -5)"]
+      },
+      {
+        id: "agarre_firme",
+        name: "Agarre Firme",
+        category: "Combate Físico",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["+1 dado em testes de Agarrar / Imobilizar"]
+      },
+      {
+        id: "punho_preciso",
+        name: "Punho Preciso",
+        category: "Combate Físico",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["+1 dado em testes de Luta"],
+        dice: { skill: { Luta: 1 } }
+      },
+      {
+        id: "forca_bruta",
+        name: "Força Bruta",
+        category: "Combate Físico",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["+1 dado em Atletismo"],
+        dice: { skill: { Atletismo: 1 } }
+      },
+      {
+        id: "guarda_implacavel",
+        name: "Guarda Implacável",
+        category: "Combate Físico",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["+1 dado em testes para resistir empurrões ou agarrões"]
+      },
+      {
+        id: "impacto_heroico",
+        name: "Impacto Heroico",
+        category: "Combate Físico",
+        kind: "positivo",
+        type: "Ativável",
+        cost: "4 PV",
+        effects: ["Ataque corpo a corpo causa +1d6 de dano"],
+        ability: {
+          name: "IMPACTO HEROICO",
+          dmg: "+1d6",
+          cost: "4 PV",
+          rng: "Corpo a corpo",
+          desc: "Ativação: Ação\nEfeito: Ataque corpo a corpo causa +1d6 de dano"
+        }
+      },
+      {
+        id: "reflexos_felinos",
+        name: "Reflexos Felinos",
+        category: "Mobilidade & Reflexos",
+        kind: "positivo",
+        type: "Passiva",
+        opposite: "ativacao_lenta",
+        effects: ["+1 dado em Esquiva", "+1 dado em Reação", "+1 dado em testes de Destreza"],
+        dice: { status: { des: 1 } }
+      },
+      {
+        id: "movimento_fluido",
+        name: "Movimento Fluido",
+        category: "Mobilidade & Reflexos",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["Penalidades por terreno difícil são reduzidas pela metade"]
+      },
+      {
+        id: "passo_silencioso",
+        name: "Passo Silencioso",
+        category: "Mobilidade & Reflexos",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["+1 dado em Furtividade"],
+        dice: { skill: { Furtividade: 1 } }
+      },
+      {
+        id: "salto_urbano",
+        name: "Salto Urbano",
+        category: "Mobilidade & Reflexos",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["+1 dado em Acrobacia"],
+        dice: { skill: { Acrobacia: 1 } }
+      },
+      {
+        id: "arrancada_rapida",
+        name: "Arrancada Rápida",
+        category: "Mobilidade & Reflexos",
+        kind: "positivo",
+        type: "Ativável",
+        cost: "3 PV",
+        effects: ["+2m de deslocamento até o fim do turno"],
+        ability: {
+          name: "ARRANCADA RÁPIDA",
+          dmg: "—",
+          cost: "3 PV",
+          rng: "+2m",
+          desc: "Ativação: Reação\nEfeito: +2m de deslocamento até o fim do turno"
+        }
+      },
+      {
+        id: "equilibrio_sobrenatural",
+        name: "Equilíbrio Sobrenatural",
+        category: "Mobilidade & Reflexos",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["+1 dado em testes de equilíbrio ou quedas"]
+      },
+      {
+        id: "maos_precisas",
+        name: "Mãos Precisas",
+        category: "Precisão & Técnica",
+        kind: "positivo",
+        type: "Ativável",
+        cost: "5 PV",
+        effects: ["Ataques à distância causam +1d6 de dano até errar um ataque ou fim da cena"],
+        ability: {
+          name: "MÃOS PRECISAS",
+          dmg: "+1d6",
+          cost: "5 PV",
+          rng: "Distância",
+          desc: "Ativação: Ação\nEfeito: Ataques à distância causam +1d6 de dano\nDuração: Até errar um ataque ou fim da cena"
+        }
+      },
+      {
+        id: "analise_combate",
+        name: "Análise de Combate",
+        category: "Precisão & Técnica",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["Após 1 rodada observando um alvo: +1d6 para acertar ataques contra ele"]
+      },
+      {
+        id: "mira_heroica",
+        name: "Mira Heroica",
+        category: "Precisão & Técnica",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["+1 dado em Pontaria"],
+        dice: { skill: { Pontaria: 1 } }
+      },
+      {
+        id: "pericia_mecanica",
+        name: "Perícia Mecânica",
+        category: "Precisão & Técnica",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["+1 dado em Tecnologia"],
+        dice: { skill: { Tecnologia: 1 } }
+      },
+      {
+        id: "cirurgiao_de_campo",
+        name: "Cirurgião de Campo",
+        category: "Precisão & Técnica",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["+1 dado em Medicina"],
+        dice: { skill: { Medicina: 1 } }
+      },
+      {
+        id: "mecanica_precisa",
+        name: "Mecânica Precisa",
+        category: "Precisão & Técnica",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["Ataques à distância ignoram -1 dado de penalidade por cobertura leve"]
+      },
+      {
+        id: "corpo_resistente",
+        name: "Corpo Resistente",
+        category: "Resistência & Sobrevivência",
+        kind: "positivo",
+        type: "Passiva",
+        opposite: "corpo_fragilizado",
+        effects: ["+2 na DT de Defesa Física"]
+      },
+      {
+        id: "folego_aco",
+        name: "Fôlego de Aço",
+        category: "Resistência & Sobrevivência",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["Ao chegar a 0 PV: age normalmente por 2 rodadas (1x por combate)"]
+      },
+      {
+        id: "recuperacao_rapida",
+        name: "Recuperação Rápida",
+        category: "Resistência & Sobrevivência",
+        kind: "positivo",
+        type: "Ativável",
+        limit: "2x por combate",
+        effects: ["+1d10 em habilidades de cura"],
+        ability: {
+          name: "RECUPERAÇÃO RÁPIDA",
+          dmg: "+1d10",
+          cost: "Ação",
+          rng: "—",
+          desc: "Ativação: Ação\nEfeito: +1d10 em habilidades de cura\nLimite: 2x por combate"
+        }
+      },
+      {
+        id: "pele_tenaz",
+        name: "Pele Tenaz",
+        category: "Resistência & Sobrevivência",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["Ignora o primeiro ponto de dano leve por rodada"]
+      },
+      {
+        id: "pulmoes_de_aco",
+        name: "Pulmões de Aço",
+        category: "Resistência & Sobrevivência",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["+1 dado em testes de sobrevivência e fôlego"],
+        dice: { skill: { Sobrevivência: 1 } }
+      },
+      {
+        id: "recuperacao_heroica",
+        name: "Recuperação Heroica",
+        category: "Resistência & Sobrevivência",
+        kind: "positivo",
+        type: "Ativável",
+        limit: "1x por cena",
+        effects: ["Recupera 1d6 PV ao cair abaixo de 50%"],
+        ability: {
+          name: "RECUPERAÇÃO HEROICA",
+          dmg: "1d6 PV",
+          cost: "—",
+          rng: "—",
+          desc: "Ativação: Reação\nEfeito: Recupera 1d6 PV ao cair abaixo de 50% (1x por cena)"
+        }
+      },
+      {
+        id: "estrategista_nato",
+        name: "Estrategista Nato",
+        category: "Estratégia & Mente",
+        kind: "positivo",
+        type: "Ativável",
+        cost: "5 PV",
+        effects: ["Ataques combinados recebem +1d6 (acerto ou dano)"],
+        ability: {
+          name: "ESTRATÉGIA DE COMBATE",
+          dmg: "+1d6",
+          cost: "5 PV",
+          rng: "—",
+          desc: "Efeito: Ataques combinados recebem +1d6 (acerto ou dano)"
+        }
+      },
+      {
+        id: "vontade_inabalavel",
+        name: "Vontade Inabalável",
+        category: "Estratégia & Mente",
+        kind: "positivo",
+        type: "Passiva",
+        opposite: "limitacao_psicologica",
+        effects: ["+1 dado em testes contra medo, intimidação e controle mental"]
+      },
+      {
+        id: "olho_tatico",
+        name: "Olho Tático",
+        category: "Estratégia & Mente",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["+1 dado em Investigação"],
+        dice: { skill: { Investigação: 1 } }
+      },
+      {
+        id: "memoria_marcial",
+        name: "Memória Marcial",
+        category: "Estratégia & Mente",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["Após ver uma técnica: +1 dado no próximo teste de Luta contra o mesmo alvo"]
+      },
+      {
+        id: "pressentimento",
+        name: "Pressentimento",
+        category: "Estratégia & Mente",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["+1 dado em Intuição"],
+        dice: { skill: { Intuição: 1 } }
+      },
+      {
+        id: "analise_forense",
+        name: "Análise Forense",
+        category: "Estratégia & Mente",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["+1 dado em Ciências"],
+        dice: { skill: { Ciências: 1 } }
+      },
+      {
+        id: "controle_refinado",
+        name: "Controle Refinado",
+        category: "Quirk & Heroísmo",
+        kind: "positivo",
+        type: "Passiva",
+        opposite: "quirk_instavel",
+        effects: ["+1 dado em testes de Controle de Quirk"],
+        dice: { status: { quirk: 1 } }
+      },
+      {
+        id: "potencia_expandida",
+        name: "Potência Expandida",
+        category: "Quirk & Heroísmo",
+        kind: "positivo",
+        type: "Ativável",
+        cost: "5 PV",
+        effects: ["+2 casas de alcance ou área do Quirk por 1 turno"],
+        ability: {
+          name: "POTÊNCIA EXPANDIDA",
+          dmg: "—",
+          cost: "5 PV",
+          rng: "+2 casas",
+          desc: "Efeito: +2 casas de alcance ou área do Quirk\nDuração: 1 turno"
+        }
+      },
+      {
+        id: "uso_criativo",
+        name: "Uso Criativo",
+        category: "Quirk & Heroísmo",
+        kind: "positivo",
+        type: "Ativável",
+        limit: "1x por situação",
+        effects: ["Uso alternativo do Quirk com +1 a +3 dados (narrador decide)"]
+      },
+      {
+        id: "foco_quirk",
+        name: "Foco de Quirk",
+        category: "Quirk & Heroísmo",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["+1 dado em testes de Quirk após falhar (1x por cena)"]
+      },
+      {
+        id: "aura_inspiradora",
+        name: "Aura Inspiradora",
+        category: "Quirk & Heroísmo",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["+1 dado em Diplomacia"],
+        dice: { skill: { Diplomacia: 1 } }
+      },
+      {
+        id: "sangue_heroico",
+        name: "Sangue Heroico",
+        category: "Quirk & Heroísmo",
+        kind: "positivo",
+        type: "Passiva",
+        effects: ["1x por cena: +1 dado em qualquer teste físico"]
+      },
+      {
+        id: "sinergia_corporal",
+        name: "Sinergia Corporal",
+        category: "Quirk & Heroísmo",
+        kind: "positivo",
+        type: "Ativável",
+        cost: "5 PV",
+        effects: ["Ataque físico + Quirk causa +1d6 de dano"],
+        ability: {
+          name: "SINERGIA CORPORAL",
+          dmg: "+1d6",
+          cost: "5 PV",
+          rng: "—",
+          desc: "Efeito: Ataque físico + Quirk causa +1d6 de dano"
+        }
+      },
+      {
+        id: "espirito_heroico",
+        name: "Espírito Heroico",
+        category: "Quirk & Heroísmo",
+        kind: "positivo",
+        type: "Reação",
+        effects: ["Intercepta ataque contra aliado ou civil próximo (1x por rodada)"],
+        ability: {
+          name: "ESPÍRITO HEROICO",
+          dmg: "—",
+          cost: "Reação",
+          rng: "Curto",
+          desc: "Efeito: Intercepta ataque contra aliado ou civil próximo\nLimite: 1x por rodada"
+        }
+      },
+      {
+        id: "nunca_desistir",
+        name: "Nunca Desistir",
+        category: "Quirk & Heroísmo",
+        kind: "positivo",
+        type: "Passiva",
+        opposite: "limite_fisico_baixo",
+        effects: ["Com 25% ou menos de PV: +2 pontos temporários em todos os status"]
+      },
+      {
+        id: "ultimo_heroi",
+        name: "O Último Herói",
+        category: "Quirk & Heroísmo",
+        kind: "positivo",
+        type: "Passiva",
+        limit: "Única na campanha",
+        effects: ["Antes de morrer: contra-ataque com crítico garantido; depois entra em estado Morrendo"]
+      },
+      {
+        id: "musculatura_fragil",
+        name: "Musculatura Frágil",
+        category: "Traços Negativos",
+        kind: "negativo",
+        type: "Negativo",
+        opposite: "potencia_muscular",
+        effects: ["-1 dado em testes de Força"],
+        dice: { status: { for: -1 } }
+      },
+      {
+        id: "impulsivo",
+        name: "Impulsivo",
+        category: "Traços Negativos",
+        kind: "negativo",
+        type: "Negativo",
+        opposite: "olho_tatico",
+        effects: ["Primeiro turno: -1 dado em testes de estratégia/planejamento"]
+      },
+      {
+        id: "cansaco_cronico",
+        name: "Cansaço Crônico",
+        category: "Traços Negativos",
+        kind: "negativo",
+        type: "Negativo",
+        opposite: "folego_aco",
+        effects: ["Após 2 rodadas de esforço: -1 dado em testes físicos"]
+      },
+      {
+        id: "mira_instavel",
+        name: "Mira Instável",
+        category: "Traços Negativos",
+        kind: "negativo",
+        type: "Negativo",
+        opposite: "mira_heroica",
+        effects: ["-1 dado em Pontaria"],
+        dice: { skill: { Pontaria: -1 } }
+      },
+      {
+        id: "passos_pesados",
+        name: "Passos Pesados",
+        category: "Traços Negativos",
+        kind: "negativo",
+        type: "Negativo",
+        opposite: "passo_silencioso",
+        effects: ["-1 dado em Furtividade"],
+        dice: { skill: { Furtividade: -1 } }
+      },
+      {
+        id: "fraqueza_articular",
+        name: "Fraqueza Articular",
+        category: "Traços Negativos",
+        kind: "negativo",
+        type: "Negativo",
+        opposite: "salto_urbano",
+        effects: ["-1 dado em Acrobacia"],
+        dice: { skill: { Acrobacia: -1 } }
+      },
+      {
+        id: "atavismo_social",
+        name: "Travado Social",
+        category: "Traços Negativos",
+        kind: "negativo",
+        type: "Negativo",
+        opposite: "aura_inspiradora",
+        effects: ["-1 dado em Diplomacia"],
+        dice: { skill: { Diplomacia: -1 } }
+      },
+      {
+        id: "reflexo_tardio",
+        name: "Reflexo Tardio",
+        category: "Traços Negativos",
+        kind: "negativo",
+        type: "Negativo",
+        opposite: "pressentimento",
+        effects: ["-1 dado em Intuição"],
+        dice: { skill: { Intuição: -1 } }
+      },
+      {
+        id: "mente_nublada",
+        name: "Mente Nublada",
+        category: "Traços Negativos",
+        kind: "negativo",
+        type: "Negativo",
+        opposite: "analise_forense",
+        effects: ["-1 dado em Ciências"],
+        dice: { skill: { Ciências: -1 } }
+      },
+      {
+        id: "pulmao_curto",
+        name: "Pulmão Curto",
+        category: "Traços Negativos",
+        kind: "negativo",
+        type: "Negativo",
+        opposite: "pulmoes_de_aco",
+        effects: ["-1 dado em Sobrevivência"],
+        dice: { skill: { Sobrevivência: -1 } }
+      },
+      {
+        id: "dor_cronica",
+        name: "Dor Crônica",
+        category: "Traços Negativos",
+        kind: "negativo",
+        type: "Negativo",
+        opposite: "pele_tenaz",
+        effects: ["Ao sofrer dano: -1 dado no próximo teste físico"]
+      },
+      {
+        id: "impulso_descontrolado",
+        name: "Impulso Descontrolado",
+        category: "Traços Negativos",
+        kind: "negativo",
+        type: "Negativo",
+        opposite: "controle_refinado",
+        effects: ["Quando usa Quirk: -1 dado se estiver em pressão"]
+      },
+      {
+        id: "mente_dispersiva",
+        name: "Mente Dispersiva",
+        category: "Traços Negativos",
+        kind: "negativo",
+        type: "Negativo",
+        opposite: "vontade_inabalavel",
+        effects: ["-1 dado em testes de Intuição ou Investigação"]
+      },
+      {
+        id: "visao_tunel",
+        name: "Visão de Túnel",
+        category: "Traços Negativos",
+        kind: "negativo",
+        type: "Negativo",
+        opposite: "reflexos_felinos",
+        effects: ["Quando foca em um alvo: -1 dado em Reação contra outros inimigos"]
+      },
+      {
+        id: "panico_multidao",
+        name: "Pânico de Multidão",
+        category: "Traços Negativos",
+        kind: "negativo",
+        type: "Negativo",
+        opposite: "espirito_heroico",
+        effects: ["Em cenas com muitos civis: -1 dado em testes sociais"]
+      },
+      {
+        id: "corpo_fragilizado",
+        name: "Corpo Fragilizado",
+        category: "Traços Negativos",
+        kind: "negativo",
+        type: "Negativo",
+        opposite: "corpo_resistente",
+        effects: ["-2 na DT de Defesa Física"]
+      },
+      {
+        id: "quirk_instavel",
+        name: "Quirk Instável",
+        category: "Traços Negativos",
+        kind: "negativo",
+        type: "Negativo",
+        opposite: "controle_refinado",
+        effects: ["Em 1 natural usando o Quirk: falha automática + efeito colateral narrativo"]
+      },
+      {
+        id: "limite_fisico_baixo",
+        name: "Limite Físico Baixo",
+        category: "Traços Negativos",
+        kind: "negativo",
+        type: "Negativo",
+        opposite: "nunca_desistir",
+        effects: ["Abaixo de 50% PV: -2 na DT de Defesa"]
+      },
+      {
+        id: "ativacao_lenta",
+        name: "Ativação Lenta",
+        category: "Traços Negativos",
+        kind: "negativo",
+        type: "Negativo",
+        opposite: "reflexos_felinos",
+        effects: ["Primeira rodada de combate: Quirk indisponível"]
+      }
+    ];
 
     // ===== Helpers =====
     const el = (id) => document.getElementById(id);
@@ -1121,6 +2135,164 @@
       return (n > 0 ? "+" : "") + n;
     }
 
+    // ===== Codex (Traços) =====
+    const codexTraits = el("codexTraits");
+    const traitsPosCount = el("traitsPosCount");
+    const traitsNegCount = el("traitsNegCount");
+    const traitsBalanceStatus = el("traitsBalanceStatus");
+    const selectedTraits = new Set();
+
+    function traitById(id){ return TRAITS.find(t => t.id === id); }
+    function traitIsPositive(t){ return t.kind === "positivo"; }
+
+    function renderCodex(){
+      if (!codexTraits) return;
+      codexTraits.innerHTML = "";
+      const categories = Array.from(new Set(TRAITS.map(t => t.category)));
+      categories.forEach(cat => {
+        const wrap = document.createElement("div");
+        wrap.className = "codexCategory";
+        const details = document.createElement("details");
+        details.open = false;
+        const summary = document.createElement("summary");
+        summary.className = "codexCategoryTitle";
+        const summaryTitle = document.createElement("div");
+        summaryTitle.textContent = `📂 ${cat}`;
+        const summaryHint = document.createElement("span");
+        summaryHint.textContent = "abrir ▾";
+        summary.append(summaryTitle, summaryHint);
+        const grid = document.createElement("div");
+        grid.className = "codexGrid";
+        TRAITS.filter(t => t.category === cat).forEach(t => {
+          const card = document.createElement("div");
+          card.className = `codexCard ${t.kind === "negativo" ? "negative" : ""}`;
+
+          const header = document.createElement("div");
+          header.className = "codexHeader";
+          const h4 = document.createElement("h4");
+          h4.textContent = t.name;
+          const select = document.createElement("label");
+          select.className = "codexSelect";
+          const input = document.createElement("input");
+          input.type = "checkbox";
+          input.dataset.traitId = t.id;
+          input.checked = selectedTraits.has(t.id);
+          if (t.opposite && selectedTraits.has(t.opposite)) input.disabled = true;
+          const text = document.createElement("span");
+          text.textContent = "Selecionar";
+          select.append(input, text);
+          header.append(h4, select);
+
+          const tags = document.createElement("div");
+          tags.className = "codexTags";
+          tags.innerHTML = `
+            <span class="codexTag">${t.kind === "positivo" ? "Positivo" : "Negativo"}</span>
+            <span class="codexTag">${t.type}</span>
+            ${t.cost ? `<span class="codexTag">Custo: ${t.cost}</span>` : ""}
+            ${t.limit ? `<span class="codexTag">Limite: ${t.limit}</span>` : ""}
+            ${t.opposite ? `<span class="codexTag">Oposto: ${traitById(t.opposite)?.name || t.opposite}</span>` : ""}
+            ${t.ability ? `<span class="codexTag">Habilidade automática</span>` : ""}
+          `;
+
+          const body = document.createElement("div");
+          body.style.fontSize = "12px";
+          body.style.color = "var(--muted)";
+          body.style.lineHeight = "1.4";
+          body.innerHTML = t.effects?.length
+            ? t.effects.map(e => `• ${e}`).join("<br/>")
+            : "• Sem efeitos listados";
+
+          card.append(header, tags, body);
+          grid.appendChild(card);
+        });
+
+        details.append(summary, grid);
+        wrap.append(details);
+        codexTraits.append(wrap);
+      });
+      updateTraitsUI();
+    }
+
+    function updateTraitsUI(){
+      const positives = Array.from(selectedTraits).map(traitById).filter(t => t && traitIsPositive(t));
+      const negatives = Array.from(selectedTraits).map(traitById).filter(t => t && !traitIsPositive(t));
+      traitsPosCount.value = positives.length;
+      traitsNegCount.value = negatives.length;
+      if (positives.length === negatives.length){
+        traitsBalanceStatus.value = "Balanceado";
+      } else if (positives.length > negatives.length){
+        traitsBalanceStatus.value = `Faltam ${positives.length - negatives.length} traço(s) negativo(s)`;
+      } else {
+        traitsBalanceStatus.value = `Faltam ${negatives.length - positives.length} traço(s) positivo(s)`;
+      }
+      if (codexTraits){
+        codexTraits.querySelectorAll("input[data-trait-id]").forEach(input => {
+          const trait = traitById(input.dataset.traitId);
+          input.checked = selectedTraits.has(input.dataset.traitId);
+          const isPositive = trait?.kind === "positivo";
+          const blocksPositive = isPositive && !input.checked && negatives <= positives;
+          input.disabled = Boolean(trait?.opposite && selectedTraits.has(trait.opposite)) || blocksPositive;
+        });
+      }
+    }
+
+    function syncTraitAbilities(){
+      const rows = Array.from(movesBody.querySelectorAll(".tRow[data-trait-id]"));
+      rows.forEach(row => {
+        if (!selectedTraits.has(row.dataset.traitId)) row.remove();
+      });
+      selectedTraits.forEach(id => {
+        const trait = traitById(id);
+        if (!trait?.ability) return;
+        if (!movesBody.querySelector(`.tRow[data-trait-id="${id}"]`)){
+          movesBody.appendChild(makeMoveRow({ ...trait.ability, traitId: id, locked: true }));
+        }
+      });
+    }
+
+    function getTraitDiceBonus(statusKey, skillName){
+      let bonus = 0;
+      selectedTraits.forEach(id => {
+        const trait = traitById(id);
+        if (!trait?.dice) return;
+        if (statusKey && trait.dice.status?.[statusKey]) bonus += trait.dice.status[statusKey];
+        if (skillName && trait.dice.skill?.[skillName]) bonus += trait.dice.skill[skillName];
+      });
+      return clamp(bonus, -2, 2);
+    }
+
+    codexTraits?.addEventListener("change", (e) => {
+      const input = e.target;
+      if (!(input instanceof HTMLInputElement)) return;
+      const traitId = input.dataset.traitId;
+      if (!traitId) return;
+      const trait = traitById(traitId);
+      if (!trait) return;
+
+      if (input.checked){
+        if (trait.kind === "positivo"){
+          const positives = Array.from(selectedTraits).map(traitById).filter(t => t && traitIsPositive(t)).length;
+          const negatives = Array.from(selectedTraits).map(traitById).filter(t => t && !traitIsPositive(t)).length;
+          if (negatives <= positives){
+            input.checked = false;
+            showToast("Escolha um Traço Negativo antes do Positivo.");
+            return;
+          }
+        }
+        if (trait.opposite && selectedTraits.has(trait.opposite)){
+          input.checked = false;
+          showToast("Traços opostos não podem ser escolhidos juntos.");
+          return;
+        }
+        selectedTraits.add(traitId);
+      } else {
+        selectedTraits.delete(traitId);
+      }
+      updateTraitsUI();
+      syncTraitAbilities();
+      autoSaveDebounced();
+    });
+
     // ===== Selection state =====
     let selectedStatusKey = null;
     let selectedSkillName = null;
@@ -1135,18 +2307,59 @@
     const summaryHp = el("summaryHp");
     const summaryPd = el("summaryPd");
     const summaryXp = el("summaryXp");
+    const summaryInitiative = el("summaryInitiative");
+    const summaryDefense = el("summaryDefense");
+    const summaryArmor = el("summaryArmor");
+    const summaryResistance = el("summaryResistance");
+    const summarySpeed = el("summarySpeed");
+    const summaryConditions = el("summaryConditions");
+    const summaryConditionsList = el("summaryConditionsList");
+
+    const CONDITION_IDS = [
+      "cond_injured",
+      "cond_exhausted",
+      "cond_stunned",
+      "cond_frightened",
+      "cond_poisoned",
+      "cond_burning",
+      "cond_frozen",
+      "cond_bleeding"
+    ];
+
+    function formatResource(now, max){
+      if (!Number.isFinite(now) || !Number.isFinite(max)) return "—";
+      return `${now}/${max}`;
+    }
+    function updateResourceBars(){}
 
     function updateSummary(){
       if (!summaryName) return;
-      const hpNow = el("hp_now").value || "—";
-      const pdNow = el("pd_now").value || "—";
+      const hpNow = Number(el("hp_now").value);
+      const hpMax = Number(el("hp_max").value);
+      const pdNow = Number(el("pd_now").value);
+      const pdMax = Number(el("pd_max").value);
       summaryName.textContent = el("name").value || "—";
       summaryPlayer.textContent = el("player").value || "—";
       summaryClassroom.textContent = el("classroom").value || "—";
       summaryQuirk.textContent = el("quirk_name").value || "—";
-      summaryHp.textContent = hpNow;
-      summaryPd.textContent = pdNow;
+      summaryHp.textContent = formatResource(hpNow, hpMax);
+      summaryPd.textContent = formatResource(pdNow, pdMax);
       summaryXp.textContent = el("xp").value || "—";
+      if (summaryInitiative){
+        summaryInitiative.textContent = el("combat_initiative").value || "—";
+        summaryDefense.textContent = el("combat_defense").value || "—";
+        summaryArmor.textContent = el("combat_armor").value || "—";
+        summaryResistance.textContent = el("combat_resistance").value || "—";
+        summarySpeed.textContent = el("combat_speed").value || "—";
+        const activeConditions = CONDITION_IDS.filter(id => el(id)?.checked);
+        summaryConditions.textContent = activeConditions.length ? String(activeConditions.length) : "—";
+        summaryConditionsList.textContent = activeConditions.length
+          ? activeConditions
+              .map(id => el(id)?.closest("label")?.querySelector("span")?.textContent?.trim())
+              .filter(Boolean)
+              .join(", ")
+          : "Nenhuma";
+      }
     }
 
     function statusNameFromKey(k){
@@ -1236,8 +2449,11 @@
         if (t) t.value = getSkillTotal(s);
       });
 
-      el("hp_now").value = clamp(Number(el("hp_now").value)||0, 0, 999999);
-      el("pd_now").value = clamp(Number(el("pd_now").value)||0, 0, 999999);
+      el("hp_max").value = clamp(Number(el("hp_max").value)||1, 1, 999999);
+      el("pd_max").value = clamp(Number(el("pd_max").value)||1, 1, 999999);
+      el("hp_now").value = clamp(Number(el("hp_now").value)||0, 0, Number(el("hp_max").value)||1);
+      el("pd_now").value = clamp(Number(el("pd_now").value)||0, 0, Number(el("pd_max").value)||1);
+      updateResourceBars();
 
       const used = SKILLS.reduce((acc, s) => acc + getSkillValue(s), 0);
       el("skill_points_used").value = used;
@@ -1326,9 +2542,10 @@
       const stName = statusNameFromKey(selectedStatusKey);
       const bonus = Number(el("test_bonus").value)||0;
       const extra = Number(el("test_extra").value)||0;
+      const traitDice = getTraitDiceBonus(selectedStatusKey, selectedSkillName);
 
       const baseN = Math.max(1, getStatusTotal(selectedStatusKey));
-      const n = Math.max(1, baseN + bonus);
+      const n = Math.max(1, baseN + bonus + traitDice);
 
       const r = rollPoolKeepHighest(n);
       const best = r.best;
@@ -1344,9 +2561,9 @@
       const total = base + extra;
 
       renderResult(
-        `${label} • ${n}d20 (maior) ${selectedSkillName ? `+ ${skTotal}` : ""} ${formatSigned(extra)}`,
+        `${label} • ${n}d20 (maior) ${selectedSkillName ? `+ ${skTotal}` : ""} ${traitDice ? `| Traços ${formatSigned(traitDice)}d20` : ""} ${formatSigned(extra)}`,
         total,
-        `Pool: [${r.rolls.join(", ")}] → maior ${best}${selectedSkillName ? ` | +Perícia ${skTotal}` : ""} | Extra ${formatSigned(extra)}`,
+        `Pool: [${r.rolls.join(", ")}] → maior ${best}${selectedSkillName ? ` | +Perícia ${skTotal}` : ""}${traitDice ? ` | +Traços ${formatSigned(traitDice)}d20` : ""} | Extra ${formatSigned(extra)}`,
         `[${r.rolls.join(", ")}] (maior ${best})`,
         base,
         formatSigned(extra)
@@ -1423,6 +2640,7 @@
       const row = document.createElement("div");
       row.className = "tRow";
       row.style.gridTemplateColumns = "1.05fr .55fr .45fr .55fr 1.8fr";
+      if (data.traitId) row.dataset.traitId = data.traitId;
 
       const mkIn = (ph="")=>{
         const i = document.createElement("input");
@@ -1453,6 +2671,14 @@
       fold.appendChild(sum);
       fold.appendChild(inside);
 
+      if (data.locked){
+        [name, dmg, cost, rng, ta].forEach(input => {
+          input.readOnly = true;
+          input.classList.add("readonly");
+        });
+        sum.innerHTML = `<span>Descrição</span><span class="pill">Traço</span>`;
+      }
+
       row.append(name, dmg, cost, rng, fold);
       return row;
     }
@@ -1460,8 +2686,9 @@
     function addMove(data){ movesBody.appendChild(makeMoveRow(data)); autoSaveDebounced(); }
     el("addMove").addEventListener("click", () => addMove({}));
     el("clearMoves").addEventListener("click", () => {
-      movesBody.innerHTML = "";
+      movesBody.querySelectorAll(".tRow:not([data-trait-id])").forEach(row => row.remove());
       showToast("Habilidades limpas!");
+      syncTraitAbilities();
       autoSaveDebounced();
     });
 
@@ -1749,7 +2976,8 @@
           dmg:  inputs[1]?.value || "",
           cost: inputs[2]?.value || "",
           rng:  inputs[3]?.value || "",
-          desc: ta?.value || ""
+          desc: ta?.value || "",
+          traitId: r.dataset.traitId || ""
         };
       });
     }
@@ -1776,9 +3004,20 @@
         classroom: el("classroom").value,
         quirk_name: el("quirk_name").value,
         hp_now: el("hp_now").value,
+        hp_max: el("hp_max").value,
         pd_now: el("pd_now").value,
+        pd_max: el("pd_max").value,
         xp: el("xp").value,
+        level: el("level").value,
+        money: el("money").value,
         public_opinion: el("public_opinion").value,
+        combat_initiative: el("combat_initiative").value,
+        combat_defense: el("combat_defense").value,
+        combat_armor: el("combat_armor").value,
+        combat_resistance: el("combat_resistance").value,
+        combat_speed: el("combat_speed").value,
+        conditions: Object.fromEntries(CONDITION_IDS.map(id => [id, Boolean(el(id)?.checked)])),
+        traits: Array.from(selectedTraits),
 
         story_summary: el("story_summary").value,
         story_full: el("story_full").value,
@@ -1823,9 +3062,32 @@
       el("classroom").value = obj.classroom ?? "";
       el("quirk_name").value = obj.quirk_name ?? "";
       el("hp_now").value = obj.hp_now ?? 20;
+      el("hp_max").value = obj.hp_max ?? 20;
       el("pd_now").value = obj.pd_now ?? 11;
+      el("pd_max").value = obj.pd_max ?? 11;
       el("xp").value = obj.xp ?? "XP 0/100";
+      el("level").value = obj.level ?? 0;
+      el("money").value = obj.money ?? "R$100";
       el("public_opinion").value = obj.public_opinion ?? 0;
+      el("combat_initiative").value = obj.combat_initiative ?? "";
+      el("combat_defense").value = obj.combat_defense ?? "";
+      el("combat_armor").value = obj.combat_armor ?? "";
+      el("combat_resistance").value = obj.combat_resistance ?? "";
+      el("combat_speed").value = obj.combat_speed ?? "";
+      selectedTraits.clear();
+      (obj.traits || []).forEach(t => selectedTraits.add(t));
+      renderCodex();
+      if (obj.conditions){
+        CONDITION_IDS.forEach(id => {
+          const input = el(id);
+          if (input) input.checked = Boolean(obj.conditions[id]);
+        });
+      } else {
+        CONDITION_IDS.forEach(id => {
+          const input = el(id);
+          if (input) input.checked = false;
+        });
+      }
 
       el("story_summary").value = obj.story_summary ?? "";
       el("story_full").value = obj.story_full ?? "";
@@ -1879,7 +3141,10 @@
 
       // moves
       movesBody.innerHTML = "";
-      (obj.moves || []).forEach(m => movesBody.appendChild(makeMoveRow(m)));
+      (obj.moves || []).forEach(m => {
+        const trait = m.traitId ? traitById(m.traitId) : null;
+        movesBody.appendChild(makeMoveRow({ ...m, locked: Boolean(trait?.ability) }));
+      });
       if (!(obj.moves||[]).length) { for (let i=0;i<4;i++) addMove({}); }
 
       // items
@@ -1887,6 +3152,7 @@
       (obj.items || []).forEach(it => invList.appendChild(makeInvItem(it)));
       if (!(obj.items||[]).length) { addItem({name:"", qty:1, desc:"", photo:""}); }
 
+      syncTraitAbilities();
       recalcAll();
       updateSummary();
       updateSelectionUI();
@@ -1910,9 +3176,70 @@
 
     document.addEventListener("input", (e) => {
       const id = e.target?.id || "";
-      if (id.startsWith("st_") || id.startsWith("sk_") || ["hp_now","pd_now"].includes(id)) recalcAll();
+      if (id.startsWith("st_") || id.startsWith("sk_") || ["hp_now","hp_max","pd_now","pd_max"].includes(id)) recalcAll();
       updateSummary();
       autoSaveDebounced();
+    });
+
+    // ===== Recursos flutuantes =====
+    const resourceFloat = el("resourceFloat");
+    const resourceLock = el("resourceLock");
+    const RESOURCE_POS_KEY = "bnha_resource_pos_v1";
+    let resourceLocked = true;
+
+    function setResourcePosition(x, y){
+      if (!resourceFloat) return;
+      resourceFloat.style.left = `${x}px`;
+      resourceFloat.style.top = `${y}px`;
+      resourceFloat.style.right = "auto";
+      resourceFloat.style.bottom = "auto";
+    }
+    function loadResourcePosition(){
+      if (!resourceFloat) return;
+      try{
+        const raw = localStorage.getItem(RESOURCE_POS_KEY);
+        if (!raw) return;
+        const {x, y} = JSON.parse(raw);
+        if (Number.isFinite(x) && Number.isFinite(y)) setResourcePosition(x, y);
+      }catch{}
+    }
+    function saveResourcePosition(){
+      if (!resourceFloat) return;
+      const rect = resourceFloat.getBoundingClientRect();
+      localStorage.setItem(RESOURCE_POS_KEY, JSON.stringify({x: rect.left, y: rect.top}));
+    }
+    function setResourceLockState(locked){
+      resourceLocked = locked;
+      if (resourceLock) resourceLock.textContent = locked ? "🔒 Fixar" : "🟢 Mover";
+      if (resourceFloat) resourceFloat.classList.toggle("dragging", !locked);
+    }
+    resourceLock?.addEventListener("click", (e) => {
+      e.preventDefault();
+      setResourceLockState(!resourceLocked);
+    });
+
+    resourceFloat?.addEventListener("mousedown", (e) => {
+      if (resourceLocked) return;
+      if (e.target instanceof HTMLInputElement || e.target.closest("button")) return;
+      e.preventDefault();
+      const startX = e.clientX;
+      const startY = e.clientY;
+      const rect = resourceFloat.getBoundingClientRect();
+      const originX = rect.left;
+      const originY = rect.top;
+
+      const onMove = (evt) => {
+        const dx = evt.clientX - startX;
+        const dy = evt.clientY - startY;
+        setResourcePosition(originX + dx, originY + dy);
+      };
+      const onUp = () => {
+        saveResourcePosition();
+        window.removeEventListener("mousemove", onMove);
+        window.removeEventListener("mouseup", onUp);
+      };
+      window.addEventListener("mousemove", onMove);
+      window.addEventListener("mouseup", onUp);
     });
 
     
@@ -1962,6 +3289,7 @@
       NET.targetId = ""; NET.targetType = "player";
       lobbyPanel.style.display = "none";
       appRoot.style.display = "grid";
+      if (resourceFloat) resourceFloat.style.display = "block";
       roomStatusChip.textContent = `🏠 Sala: ${roomId} • ${role.toUpperCase()}`;
       if (roomChip) roomChip.textContent = `Sala: ${roomId}`;
       if (role === "master"){
@@ -2162,7 +3490,14 @@
 
     // ===== Init =====
     restoreSectionOrder();
+    renderCodex();
     initTables();
+    if (resourceFloat){
+      resourceFloat.style.display = "none";
+      loadResourcePosition();
+      setResourceLockState(true);
+      updateResourceBars();
+    }
 
     // default moves/items se vazio
     for (let i=0;i<4;i++) addMove({});
